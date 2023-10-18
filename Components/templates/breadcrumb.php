@@ -13,8 +13,6 @@
                     echo '<li class="breadcrumb-item"><a href="#">Data Satuan</a></li>';
                 }elseif($page == "supplier"){
                     echo '<li class="breadcrumb-item"><a href="#">Data Supplier</a></li>';
-                }elseif($page == "karyawan"){
-                    echo '<li class="breadcrumb-item"><a href="#">Data Karyawan</a></li>';
                 }elseif($page == "barang-masuk"){
                     echo '<li class="breadcrumb-item"><a href="#">Data Barang Masuk</a></li>';
                 }elseif($page == "add_bm"){

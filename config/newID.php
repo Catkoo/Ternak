@@ -43,12 +43,3 @@ $num = (int) substr($empty, 3);
 $num++;
 $car = "BK-";
 $idBK = sprintf("%s%04s", $car, $num);
-
-// costume id Karyawan
-$qryIdKary = $koneksi->query("SELECT MAX(id_kary) FROM karyawan");
-$resltKary = $qryIdKary->fetch_array();
-$empty = $resltKary[0];
-$num = (int) substr($empty, 4);
-$num++;
-$car = "KARY-";
-$idKary = sprintf("%s%04s", $car, $num);

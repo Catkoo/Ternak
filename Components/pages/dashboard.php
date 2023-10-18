@@ -22,11 +22,6 @@
         <p class="text">Supplier</p>
         <p class="jml"><?= $resultSup;?> Data</p>
     </div>
-     <div class="card text-bg-secondary">
-        <i class="fa-solid fa-users icon"></i>
-        <p class="text">Karyawan</p>
-        <p class="jml"><?= $resultSup;?> Data</p>
-    </div>
 </div>
 
 <!-- 

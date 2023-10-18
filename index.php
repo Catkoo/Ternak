@@ -33,9 +33,6 @@ include "Components/templates/header.php";
         }elseif($page == "supplier"){
             include "Components/pages/data_supplier.php";
 
-        }elseif($page == "karyawan"){
-            include "Components/pages/data_karyawan.php";
-
         }elseif($page == "barang-masuk"){
             include "Components/pages/barang_masuk.php";
         }elseif($page == "add_bm"){

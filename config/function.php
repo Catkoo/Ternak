@@ -319,36 +319,3 @@ function deleteBarangKLR($data){
 
     return mysqli_affected_rows($koneksi);
 }
-
-// FUNCTION TAMBAH, EDIT, DELETE DATA KARYAWAN
-function tambahKaryawan($data){
-    global $koneksi;
-
-    $id = $data['idkary'];
-    $nik = $data['nik'];
-    $name = $data['karyawan'];
-    $no = $data['no'];
-    $alamat = $data['alamat'];
-
-    $koneksi->query("INSERT INTO karyawan(id_kary, nik, nama_kary, telepon_kary, alamat_kary, latest_update)VALUES('$id', '$nik', '$name','$no', '$alamat', NOW())");
-    return mysqli_affected_rows($koneksi);
-}
-function editKaryawan($data){
-    global $koneksi;
-
-    $id = $data['id'];
-    $nik = $data['nik'];
-    $name = $data['karyawan'];
-    $no = $data['no'];
-    $alamat = $data['alamat'];
-
-    $koneksi->query("UPDATE karyawan SET nik='$nik', nama_kary='$name', telepon_kary='$no', alamat_kary='$alamat', latest_update=NOW() WHERE id_kary = '$id'");
-    return mysqli_affected_rows($koneksi);
-}
-function deleteKaryawan($data){
-    global $koneksi;
-    $id = $data['id'];
-
-    $koneksi->query("DELETE FROM karyawan WHERE id_kary='$id'");
-    return mysqli_affected_rows($koneksi);
-}

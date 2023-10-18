@@ -14,9 +14,6 @@
             <a href="?page=supplier">
                 <li class="<?= $page=='supplier' ? 'active' : '';?>"><i class="fa-solid fa-users"></i> Data Supplier</li>
             </a>
-             <a href="?page=karyawan">
-                <li class="<?= $page=='karyawan' ? 'active' : '';?>"><i class="fa-solid fa-users"></i> Data Karyawan</li>
-            </a>
             <hr>
             <a href="?page=barang-masuk">
                 <li class="<?= $page=='barang-masuk' || $page=='add_bm' || $page=='detail_bm' ? 'active' : '';?>"><i class="fa-solid fa-cart-flatbed-suitcase"></i> Data Barang Masuk</li>
