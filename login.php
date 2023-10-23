@@ -52,7 +52,6 @@ if(isset($_POST['login'])){
                         <button class="btn btn-primary" type="submit" name="login">Login</button>
                     </div>
                 </form>
-                <!-- <h10 style="color:black,text-align: center">copyright @TernakAyam 2023</h10> -->
             </div>
         </div>
 

@@ -1,72 +1,51 @@
 <?php
-include "config/koneksi.php";
-$filename = 'Report_Data_'.date('d-m-Y').'.xls';
-header("Content-type: application/octet-stream");
-header("Content-Disposition: attachment; filename=$filename");
+require('fpdf/fpdf.php'); // Menggunakan path relatif ke file fpdf.php
 
-$start = $_GET['start'];
-$end = $_GET['end'];
+// Fungsi untuk mengurutkan data berdasarkan waktu
+function sortTableByTime($array, $key) {
+    usort($array, function($a, $b) {
+        return strtotime($a[$key]) - strtotime($b[$key]);
+    });
+    return $array;
+}
+
+// Ambil data dari database (sesuaikan dengan cara Anda mengambil data)
+include 'koneksi.php'; // Sertakan file koneksi database
+$sql = $koneksi->query("SELECT * FROM barang_keluar as bk JOIN barang as b ON bk.barang_id=b.id_barang LEFT JOIN satuan as st ON st.id_satuan=b.satuan_id JOIN history as h ON h.bmk_id=bk.id_bk WHERE role='BK' group by id_bk");
+$data = $sql->fetch_all(MYSQLI_ASSOC);
+
+// Sortir data berdasarkan waktu
+$data = sortTableByTime($data, 'tanggal_keluar');
+
+// Buat objek PDF
+$pdf = new FPDF();
+$pdf->AddPage();
+$pdf->SetFont('Arial', 'B', 12);
+
+// Judul
+$pdf->Cell(0, 10, 'Laporan Data Barang Keluar', 0, 1, 'C');
+
+// Tabel
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(20, 10, 'No', 1);
+$pdf->Cell(60, 10, 'Nama Barang', 1);
+$pdf->Cell(40, 10, 'Jumlah', 1);
+$pdf->Cell(50, 10, 'Tanggal Keluar', 1);
+$pdf->Cell(60, 10, 'Tujuan', 1);
+$pdf->Ln();
+
+$pdf->SetFont('Arial', '', 10);
+$no = 1;
+foreach ($data as $row) {
+    $pdf->Cell(20, 10, $no, 1);
+    $pdf->Cell(60, 10, $row['nama_barang'], 1);
+    $pdf->Cell(40, 10, $row['jumlah_keluar'], 1);
+    $pdf->Cell(50, 10, date('d/m/Y H:i', strtotime($row['tanggal_keluar'])), 1);
+    $pdf->Cell(60, 10, $row['tujuan'], 1);
+    $pdf->Ln();
+    $no++;
+}
+
+// Simpan file PDF
+$pdf->Output('barang-keluar.pdf', 'D');
 ?>
-<table border="1">
-    <thead>
-        <tr>
-            <td colspan="8" style="text-align:center">REPORT DATA <b><?= date('d/m/Y', strtotime($start));?></b> - <b><?= date('d/m/Y', strtotime($end));?></b></td>
-        </tr>
-        <tr>
-            <th>No</th>
-            <th>Nama Barang</th>
-            <th>Satuan</th>
-            <th>Stok</th>
-            <th>Jumlah Masuk</th>
-            <th>Tanggal Masuk</th>
-            <th>Jumlah Keluar</th>
-            <th>Tanggal Keluar</th>
-        </tr>
-    </thead>
-    <?php
-    
-
-    $no =1;
-    $sql = $koneksi->query("SELECT br.id_barang, br.stok, br.nama_barang, br.satuan_id, st.id_satuan, st.nama_satuan, bk.barang_id, bk.tanggal_keluar, bk.jumlah_keluar, bm.barang_id, bm.tanggal_masuk, bm.jumlah_masuk
-    FROM barang as br
-    JOIN satuan as st ON st.id_satuan=br.satuan_id
-    LEFT JOIN barang_keluar as bk ON bk.barang_id=br.id_barang
-    LEFT JOIN barang_masuk as bm ON bm.barang_id=br.id_barang
-    WHERE bk.tanggal_keluar BETWEEN '$start' AND '$end' 
-    OR bm.tanggal_masuk BETWEEN '$start' AND '$end'
-    ");
-
-    while($data = $sql->fetch_assoc()){
-        $sqlBK = $koneksi->query("SELECT SUM(jumlah_keluar) as jumlah_keluar FROM barang_keluar WHERE tanggal_keluar BETWEEN '$start' AND '$end' ");
-        $totBk = $sqlBK->fetch_assoc();
-
-        $sqlBM = $koneksi->query("SELECT SUM(jumlah_masuk) as jumlah_masuk FROM barang_masuk WHERE tanggal_masuk BETWEEN '$start' AND '$end' ");
-        $totBm = $sqlBM->fetch_assoc();
-        ?>
-        <tbody>
-            <tr>
-                <td><?= $no;?></td>
-                <td><?= $data['nama_barang'];?></td>
-                <td><?= $data['nama_satuan'];?></td>
-                <td><?= $data['stok'];?></td>
-                <td><?= $data['jumlah_masuk'] != null ? $data['jumlah_masuk'] : '-';?></td>
-                <td><?= $data['tanggal_masuk'] != null ? date('d/m/Y H:i', strtotime($data['tanggal_masuk'])) : '-';?></td>
-                <td><?= $data['jumlah_keluar'] != null ? $data['jumlah_keluar'] : '-';?></td>
-                <td><?= $data['tanggal_keluar'] != null ? date('d/m/Y H:i', strtotime($data['tanggal_keluar'])) : '-';?></td>
-            </tr>
-        </tbody>
-    <?php $no++; } ?>
-        <tfoot>
-        <td colspan="8"></td>
-        <tr>
-            <th colspan="2" >Total Barang Masuk : </th>
-            <td colspan="6" style="text-align:left" ><?= $totBm['jumlah_masuk'] != null ? $totBm['jumlah_masuk'] : '-'; ?></td>
-        </tr>
-        <tr>
-            <th colspan="2">Total Barang Keluar :</th>
-            <td colspan="6" style="text-align:left"><?= $totBk['jumlah_keluar'] != null ? $totBk['jumlah_keluar'] : '-';?></td>
-        </tr>
-        
-    </tfoot>
-    
-</table>

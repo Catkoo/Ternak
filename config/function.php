@@ -13,10 +13,6 @@ $resultBm = $sqlBm->num_rows;
 $sqlSup = $koneksi->query("SELECT * FROM supplier");
 $resultSup = $sqlSup->num_rows;
 
-$sqlSup = $koneksi->query("SELECT * FROM karyawan");
-$resultSup = $sqlSup->num_rows;
-
-
 // MENGHAPUS DATA HISTORY KETIKA DATA SUDAH LEBIH DARI 1 HARI
 $koneksi->query("DELETE FROM history WHERE DATEDIFF(CURDATE(), tgl) > 1");
 
@@ -74,7 +70,7 @@ function loginFunc($data){
     return mysqli_affected_rows($koneksi);
 }
 
-// CHANGE PASSWORD
+//Reset password
 if(isset($_POST['changepwd'])){
     $old = md5($_POST['oldpassword']);
     $new = md5($_POST['newpassword']);
@@ -319,3 +315,76 @@ function deleteBarangKLR($data){
 
     return mysqli_affected_rows($koneksi);
 }
+
+//----------------
+function addUser($nama, $username, $password, $rpassword) {
+    global $koneksi;
+
+    // Mengecek apakah username sudah ada di dalam database
+    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ?");
+    $query->bind_param("s", $username);
+    $query->execute();
+    $query->store_result();
+
+    if ($query->num_rows > 0) {
+        return -1; // Username sudah digunakan
+    }
+
+    // Mengecek apakah password 1 dan password 2 match
+    if ($password !== $rpassword) {
+        return -2; // Password tidak sesuai
+    }
+
+    // Jika kondisi di atas terpenuhi, data akan dimasukkan ke dalam database
+    $query = $koneksi->prepare("INSERT INTO users (nama, username, password, created_at) VALUES (?, ?, ?, NOW())");
+    $query->bind_param("sss", $nama, $username, $password);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+        return 1; // User berhasil ditambahkan
+    } else {
+        return -3; // Error saat menambahkan user
+    }
+}
+
+
+function editUser($id, $nama, $username, $password) {
+    global $koneksi;
+
+    // Mengecek apakah username sudah ada di dalam database
+    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
+    $query->bind_param("si", $username, $id);
+    $query->execute();
+    $query->store_result();
+
+    if ($query->num_rows > 0) {
+        return -1; // Username sudah digunakan
+    }
+
+    // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database
+    $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ?, password = ? WHERE id = ?");
+    $query->bind_param("sssi", $nama, $username, $password, $id);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+        return 1; // User berhasil diubah
+    } else {
+        return -2; // Error saat mengubah user
+    }
+}
+
+function deleteUser($id) {
+    global $koneksi;
+
+    // Menghapus user berdasarkan ID
+    $query = $koneksi->prepare("DELETE FROM users WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+        return 1; // User berhasil dihapus
+    } else {
+        return -2; // Error saat menghapus user
+    }
+}
+

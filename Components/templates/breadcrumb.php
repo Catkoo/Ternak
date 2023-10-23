@@ -31,6 +31,8 @@
                         <li class="breadcrumb-item active" aria-current="page">Detail Barang Keluar</li>';
                 }elseif($page == "report"){
                     echo'<li class="breadcrumb-item"><a href="#">Report Data</a></li>';
+                }elseif($page == "tambah_user"){
+                    echo '<li class="breadcrumb-item"><a href="#">Tambah User</a></li>';
                 }
             ?>
         </ol>
