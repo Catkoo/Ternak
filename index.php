@@ -47,12 +47,6 @@ include "Components/templates/header.php";
         }elseif($page == "detail-bk"){
             include "Components/pages/detail/detail_bk.php";
         }
-        
-        elseif($page == "report"){
-            include "Components/pages/report.php";
-        }elseif($page == "tambah_user"){
-            include "Components/pages/tambah_user.php";
-        }
         ?>
         
     </div>

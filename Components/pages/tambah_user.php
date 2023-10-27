@@ -1,18 +1,17 @@
 <?php
 // Fungsi untuk menambah pengguna
-// Fungsi untuk menambah pengguna
-// Fungsi untuk menambah pengguna
 if (isset($_POST['addUser'])) {
     $nama = $_POST['nama'];
     $username = $_POST['username'];
     $password = md5($_POST['password']);
-    $rpassword = md5($_POST['rpassword']); // Tambahkan ini untuk repeated password
+    $rpassword = md5($_POST['rpassword']);
 
-    // Validasi apakah kata sandi dan repeated password sama
+    $role = $_POST['role'];
+
     if ($password !== $rpassword) {
         echo "<script>alert('Password tidak sesuai!');</script>";
     } else {
-        $result = addUser($nama, $username, $password, $rpassword);
+        $result = addUser($nama, $username, $password, $rpassword, $role);
 
         if ($result === 1) {
             echo "<script>alert('User berhasil ditambahkan!');</script>";
@@ -27,27 +26,42 @@ if (isset($_POST['addUser'])) {
 }
 
 
-
-
 // Fungsi untuk mengedit pengguna
 if (isset($_POST['editUser'])) {
     $id = $_POST['id'];
     $nama = $_POST['nama'];
     $username = $_POST['username'];
-    $password = md5($_POST['password']);
-
-    $result = editUser($id, $nama, $username, $password);
-
+    
+    // Cek apakah pengguna ingin mengubah kata sandi
+    if (!empty($_POST['password'])) {
+        $password = md5($_POST['password']);
+        $rpassword = md5($_POST['rpassword']);
+        
+        // Validasi apakah kata sandi dan konfirmasi ulang kata sandi cocok
+        if ($password !== $rpassword) {
+            echo "<script>alert('Password tidak sesuai!');</script>";
+        } else {
+            $result = editUser($id, $nama, $username, $password, $rpassword);
+        }
+    } else {
+        // Pengguna tidak ingin mengubah kata sandi
+        $result = editUserWithoutPassword($id, $nama, $username);
+    }
+    
     if ($result === 1) {
-        echo "<script>alert('User berhasil diubah!');</script>";
+        echo "<script>alert('Informasi pengguna berhasil diubah!');</script>";
     } else if ($result === -1) {
         echo "<script>alert('Username sudah digunakan!');</script>";
     } else if ($result === -2) {
-        echo "<script>alert('Password tidak sesuai!');</script>";
-    } else {
-        echo "<script>alert('Gagal mengubah user!');</script>";
+        echo "<script>alert('Error saat mengubah pengguna!');</script>";
     }
 }
+
+
+
+
+
+
 
 // Fungsi untuk menghapus pengguna
 if (isset($_POST['deleteUser'])) {
@@ -74,6 +88,7 @@ if (isset($_POST['deleteUser'])) {
                         <th>Nama</th>
                         <th>Username</th>
                         <th>Password</th>
+                        <th>Role</th> <!-- Tambahkan kolom Role -->
                         <th>Latest Update</th>
                         <th>Aksi</th>
                     </tr>
@@ -88,6 +103,7 @@ if (isset($_POST['deleteUser'])) {
                             <td><?= $data['nama']; ?></td>
                             <td><?= $data['username']; ?></td>
                             <td><?= $data['password']; ?></td>
+                            <td><?= $data['role']; ?></td> <!-- Menampilkan peran (role) -->
                             <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -121,6 +137,10 @@ if (isset($_POST['deleteUser'])) {
                                         <div class="mb-2">
                                             <label for="password">Password</label>
                                             <input type="password" class="form-control" id="password" name="password">
+                                        </div>
+                                        <div class="mb-2">
+                                             <label for="rpassword">Ulangi Password</label>
+                                            <input type="password" class="form-control" id="rpassword" name="rpassword">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -162,6 +182,14 @@ if (isset($_POST['deleteUser'])) {
                     <div class="mb-2">
                         <label for="rpassword">Ulangi Password</label>
                         <input type="password" class="form-control" id="rpassword" name="rpassword">
+                    </div>
+                    <div class="mb-2">
+                        <label for="role">Role</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="admin">admin</option>
+                            <option value="pimpinan">pimpinan</option>
+                            <!-- Tambahkan opsi untuk peran lainnya jika diperlukan -->
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

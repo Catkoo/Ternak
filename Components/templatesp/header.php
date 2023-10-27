@@ -14,7 +14,7 @@
 </head>
 <body>
     <main>
-        <?php include "Components/templates/sidebar.php";?>
+        <?php include "Components/templatesp/sidebar.php";?>
         <div class="page-content" id="page">
             <nav class="navbar navbar-expand-lg">
                 <a href="#" class="navbar-brand" onclick="toggle()"><i class="fa-solid fa-bars"></i></a>

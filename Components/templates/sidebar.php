@@ -21,14 +21,6 @@
             <a href="?page=barang-keluar">
                 <li class="<?= $page=='barang-keluar' || $page=='add_bk' || $page=='detail-bk' ? 'active' : '';?>"><i class="fa-solid fa-truck"></i> Data Barang Keluar</li>
             </a>
-            <hr>
-            <a href="?page=report">
-                <li class="<?= $page=='report' ? 'active' : '';?>"><i class="fa-solid fa-chart-pie"></i> Report</li>
-            </a>
-            <hr>
-            <a href="?page=tambah_user">
-                <li class="<?= $page=='tambah_user' ? 'active' : '';?>"><i class="fa-solid fa-users"></i> Data User</li>
-            </a>
         </ul>
     </div>
 </div>

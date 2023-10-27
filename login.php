@@ -3,19 +3,37 @@ session_start();
 include "config/koneksi.php";
 include "config/function.php";
 
-// jika sudah login tidak bisa mengakses halamn login.php
-if(isset($_SESSION['login'])){
-    header('location:index.php');
+if (isset($_SESSION['login'])) {
+    // Jika pengguna sudah login, alihkan ke halaman yang sesuai
+    if ($_SESSION['role'] === 'admin') {
+        header('location: index.php');
+    } elseif ($_SESSION['role'] === 'pimpinan') {
+        header('location: index_pemimpin.php');
+    }
 }
 
-if(isset($_POST['login'])){
-    if(loginFunc($_POST) > 0){
-        echo"
-        <script>
-            alert('Login Berhasil!');window.location.href='index.php';
-        </script>
-        ";
+if (isset($_POST['login'])) {
+    if (loginFunc($_POST) > 0) {
+        // Setelah login berhasil, cek peran pengguna
+        $role = getRoleByUsername($_POST['username']); // Ganti dengan fungsi yang sesuai
+        if ($role === 'admin') {
+            header('location: index.php');
+        } elseif ($role === 'pimpinan') {
+            header('location: index_pemimpin.php');
+        }
+    } else {
+        echo "<script>alert('Login Gagal!');</script>";
     }
+}
+
+function getRoleByUsername($username) {
+    // Contoh cara mendapatkan peran berdasarkan username dari database
+    global $koneksi;
+    $query = $koneksi->prepare("SELECT role FROM users WHERE username = ?");
+    $query->bindParam(1, $username);
+    $query->execute();
+    $result = $query->fetchColumn();
+    return $result;
 }
 ?>
 

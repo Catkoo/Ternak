@@ -51,15 +51,29 @@ function loginFunc($data){
     $username = $data['username'];
     $password = md5($data['password']);
 
-    $qry = $koneksi->query("SELECT * FROM users WHERE username='$username' AND password='$password'");
-    $result = $qry->num_rows;
+    $stmt = $koneksi->prepare("SELECT id, username, password, role FROM users WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $stmt->store_result();
 
-    // MENGECEK APAKAH USERNAME & PASSWORD YANG DI TULISKAN TERDAPAT DI DALAM DATABASE
-    // JIKA ADA MAKA AKAN DIBUATKAN SESSION LOGIN
-    if($result > 0){
-        $session = $qry->fetch_assoc();
-        $_SESSION['login'] = $session;
-    }else{
+    if($stmt->num_rows > 0){
+        $stmt->bind_result($id, $username, $password, $role);
+        $stmt->fetch();
+
+        $_SESSION['login'] = [
+            'id' => $id,
+            'username' => $username,
+            'role' => $role
+        ];
+
+        if ($role == 'admin') {
+            header('location: index.php'); // Ganti dengan halaman admin
+        } elseif ($role == 'pimpinan') {
+            header('location: index_pemimpin.php'); // Ganti dengan halaman pimpinan
+        } else {
+            header('location: user_dashboard.php'); // Ganti dengan halaman pengguna biasa
+        }
+    } else {
         echo "
         <script>
             alert('Username Atau Password Salah');window.location.href='login.php';
@@ -69,6 +83,8 @@ function loginFunc($data){
 
     return mysqli_affected_rows($koneksi);
 }
+
+
 
 //Reset password
 if(isset($_POST['changepwd'])){
@@ -317,7 +333,7 @@ function deleteBarangKLR($data){
 }
 
 //----------------
-function addUser($nama, $username, $password, $rpassword) {
+function addUser($nama, $username, $password, $rpassword, $role) {
     global $koneksi;
 
     // Mengecek apakah username sudah ada di dalam database
@@ -336,8 +352,8 @@ function addUser($nama, $username, $password, $rpassword) {
     }
 
     // Jika kondisi di atas terpenuhi, data akan dimasukkan ke dalam database
-    $query = $koneksi->prepare("INSERT INTO users (nama, username, password, created_at) VALUES (?, ?, ?, NOW())");
-    $query->bind_param("sss", $nama, $username, $password);
+    $query = $koneksi->prepare("INSERT INTO users (nama, username, password, role, latest_update) VALUES (?, ?, ?, ?, NOW())");
+    $query->bind_param("ssss", $nama, $username, $password, $role);
     $query->execute();
 
     if ($query->affected_rows > 0) {
@@ -347,11 +363,10 @@ function addUser($nama, $username, $password, $rpassword) {
     }
 }
 
-
-function editUser($id, $nama, $username, $password) {
+function editUser($id, $nama, $username, $password, $rpassword) {
     global $koneksi;
 
-    // Mengecek apakah username sudah ada di dalam database
+    // Mengecek apakah username sudah ada di dalam database (kecuali pengguna saat ini)
     $query = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
     $query->bind_param("si", $username, $id);
     $query->execute();
@@ -361,17 +376,58 @@ function editUser($id, $nama, $username, $password) {
         return -1; // Username sudah digunakan
     }
 
-    // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database
-    $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ?, password = ? WHERE id = ?");
-    $query->bind_param("sssi", $nama, $username, $password, $id);
+    // Jika password tidak kosong, maka lakukan pemeriksaan dan update password
+    if (!empty($password)) {
+        // Mengecek apakah password dan konfirmasi ulang password cocok
+        if ($password !== $rpassword) {
+            return -2; // Password tidak sesuai
+        }
+
+        // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database termasuk password
+        $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ?, password = ? WHERE id = ?");
+        $query->bind_param("sssi", $nama, $username, $password, $id);
+    } else {
+        // Jika password kosong, maka hanya update nama dan username
+        $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
+        $query->bind_param("ssi", $nama, $username, $id);
+    }
+
     $query->execute();
 
     if ($query->affected_rows > 0) {
         return 1; // User berhasil diubah
     } else {
-        return -2; // Error saat mengubah user
+        return -3; // Error saat mengubah user
     }
 }
+
+function editUserWithoutPassword($id, $nama, $username) {
+    global $koneksi;
+
+    // Mengecek apakah username sudah ada di dalam database (kecuali pengguna saat ini)
+    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
+    $query->bind_param("si", $username, $id);
+    $query->execute();
+    $query->store_result();
+
+    if ($query->num_rows > 0) {
+        return -1; // Username sudah digunakan
+    }
+
+    // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database tanpa mengubah password
+    $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
+    $query->bind_param("ssi", $nama, $username, $id);
+    $query->execute();
+
+    if ($query->affected_rows > 0) {
+        return 1; // User berhasil diubah
+    } else {
+        return -3; // Error saat mengubah user
+    }
+}
+///------------------------------------------------------------------------------------
+
+
 
 function deleteUser($id) {
     global $koneksi;

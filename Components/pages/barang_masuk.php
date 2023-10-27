@@ -5,10 +5,29 @@ if(isset($_POST['delete'])){
         echo "<meta http-equiv='refresh' content='0;url=?page=barang-masuk'>";
     }
 }
+$filterStart = '';
+$filterEnd = '';
+
+if (isset($_POST['filter'])) {
+    // Ambil tanggal awal dan tanggal akhir dari form
+    $filterStart = $_POST['start'];
+    $filterEnd = $_POST['end'];
+}
+
 ?>
 
 
 <a href="?page=add_bm" class="btn btn-primary btn-sm mb-3">+ Tambah Data</a>
+
+
+
+<form method="post" class="form-report" style="">
+    <input type="date" class="form-control" name="start" required>
+    <input type="date" class="form-control" name="end" required>
+    <button class="btn btn-primary" name="filter" type="submit" style="width:120px;">Filter</button>
+    <a href="cetak_laporan.php?start=<?= $filterStart ?>&end=<?= $filterEnd ?>" class="btn btn-primary btn-sm mb-3">Cetak Laporan</a>
+</form>
+
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
@@ -26,7 +45,11 @@ if(isset($_POST['delete'])){
                 <tbody>
                     <?php
                     $no =1;
-                    $sql = $koneksi->query("SELECT * FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' group by id_bm ");
+                    if (empty($filterStart) && empty($filterEnd)) {
+                     $sql = $koneksi->query("SELECT * FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' group by id_bm");
+                    } else {
+                     $sql = $koneksi->query("SELECT * FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' AND DATE(tanggal_masuk) BETWEEN '$filterStart' AND '$filterEnd' GROUP BY id_bm");
+                    }
                     while($data = $sql->fetch_assoc()){?>
                         <tr>
                             <td><?= $no;?></td>
