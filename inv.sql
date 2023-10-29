@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 27 Okt 2023 pada 07.28
+-- Waktu pembuatan: 29 Okt 2023 pada 10.06
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.0.28
 
@@ -43,8 +43,7 @@ CREATE TABLE `barang` (
 --
 
 INSERT INTO `barang` (`id_barang`, `nama_barang`, `satuan_id`, `stok`, `foto_barang`, `create_by`, `created_at`, `update_at`) VALUES
-('BRG-0001', 'ayam tua 01', 'STN-0001', 52, '651e82766892c.jpg', 0, '2023-10-05 16:31:34', '2023-10-05 16:31:34'),
-('BRG-0002', 'ayam boiler', 'STN-0001', 200, '652f85447311d.jpg', 0, '2023-10-18 14:12:04', '2023-10-18 14:12:04');
+('BRG-0001', 'Ayam Kampung', 'STN-0001', 40, '653e1ef50f666.jpg', 0, '2023-10-29 15:59:33', '2023-10-29 15:59:33');
 
 -- --------------------------------------------------------
 
@@ -66,12 +65,8 @@ CREATE TABLE `barang_keluar` (
 --
 
 INSERT INTO `barang_keluar` (`id_bk`, `barang_id`, `tanggal_keluar`, `tujuan`, `jumlah_keluar`, `create_by`) VALUES
-('BK-0001', 'BRG-0001', '2023-10-05 16:32:39', 'untuk idulfitri', 25, 0),
-('BK-0002', 'BRG-0001', '2023-10-09 12:35:55', 'jual', 75, 0),
-('BK-0003', 'BRG-0002', '2023-10-18 14:13:07', 'kjdihsd', 1000, 0),
-('BK-0004', 'BRG-0002', '2023-10-20 22:38:57', 'ttt', 90, 0),
-('BK-0005', 'BRG-0002', '2023-10-23 19:31:42', 'mandiri', 10, 0),
-('BK-0006', 'BRG-0001', '2023-10-27 11:14:34', 'rrr', 100, 0);
+('BK-0001', 'BRG-0001', '2023-10-29 16:00:10', 'Jual ', 50, 0),
+('BK-0002', 'BRG-0001', '2023-10-29 16:00:57', 'jual', 10, 0);
 
 -- --------------------------------------------------------
 
@@ -93,12 +88,7 @@ CREATE TABLE `barang_masuk` (
 --
 
 INSERT INTO `barang_masuk` (`id_bm`, `barang_id`, `supplier_id`, `jumlah_masuk`, `tanggal_masuk`, `create_by`) VALUES
-('BM-0001', 'BRG-0001', 'SUP-0001', 120, '2023-10-05 16:31:59', 0),
-('BM-0003', 'BRG-0002', 'SUP-0001', 1100, '2023-10-18 14:12:25', 0),
-('BM-0004', 'BRG-0002', 'SUP-0001', 100, '2023-10-18 14:13:41', 0),
-('BM-0005', 'BRG-0002', 'SUP-0002', 100, '2023-10-23 19:32:38', 0),
-('BM-0006', 'BRG-0001', 'SUP-0002', 120, '2023-10-24 13:03:18', 0),
-('BM-0007', 'BRG-0001', 'SUP-0001', 12, '2023-10-27 11:14:14', 0);
+('BM-0001', 'BRG-0001', 'SUP-0003', 100, '2023-10-29 15:59:47', 0);
 
 -- --------------------------------------------------------
 
@@ -120,8 +110,9 @@ CREATE TABLE `history` (
 --
 
 INSERT INTO `history` (`id`, `barang_id`, `bmk_id`, `role`, `jumlah`, `tgl`) VALUES
-(12, 'BRG-0001', 0, 'BM', 12, '2023-10-27 11:14:14'),
-(13, 'BRG-0001', 0, 'BK', 100, '2023-10-27 11:14:34');
+(27, 'BRG-0001', 0, 'BM', 100, '2023-10-29 15:59:47'),
+(28, 'BRG-0001', 0, 'BK', 50, '2023-10-29 16:00:10'),
+(29, 'BRG-0001', 0, 'BK', 10, '2023-10-29 16:00:57');
 
 -- --------------------------------------------------------
 
@@ -186,7 +177,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `latest_update`) VALUES
 (13, 'Richard Khoo', 'catkoo_', '202cb962ac59075b964b07152d234b70', 'pimpinan', '2023-10-27 11:42:41'),
-(14, 'Damejrr', 'jrr', '202cb962ac59075b964b07152d234b70', 'admin', '2023-10-27 11:54:46');
+(14, 'Damejrr', 'jrr', '202cb962ac59075b964b07152d234b70', 'admin', '2023-10-27 11:54:46'),
+(19, 'Richard', 'catkoo', '81dc9bdb52d04dc20036dbd8313ed055', 'admin', '2023-10-29 15:20:19'),
+(20, 'Pimpinan', 'pimpinan', '202cb962ac59075b964b07152d234b70', 'pimpinan', '2023-10-29 16:03:51'),
+(21, 'admin', 'admin', '202cb962ac59075b964b07152d234b70', 'admin', '2023-10-29 16:04:06');
 
 --
 -- Indexes for dumped tables
@@ -242,13 +236,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `history`
 --
 ALTER TABLE `history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
