@@ -23,6 +23,10 @@ include "Components/templatesp/header.php";
             include "Components/pages/dashboard.php";      
         }elseif($page == "tambah_user"){
             include "Components/pages/tambah_user.php";
+        }elseif($page == "report_bm"){
+            include "Components/pages/report_bm.php";
+        }elseif($page == "report_bk"){
+            include "Components/pages/report_bk.php";
         }
         ?>
         

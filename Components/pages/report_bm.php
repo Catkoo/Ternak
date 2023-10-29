@@ -14,7 +14,6 @@ if (isset($_POST['filter'])) {
 }
 ?>
 
-<a href="?page=add_bm" class="btn btn-primary btn-sm mb-3">+ Tambah Data</a>
 
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
@@ -35,7 +34,6 @@ if (isset($_POST['filter'])) {
                         <th>Supplier</th>
                         <th>Jumlah</th>
                         <th>Bulan Masuk</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,13 +53,11 @@ if (isset($_POST['filter'])) {
                             <td><span class="badge text-bg-success">+ <?= $data['jumlah_masuk']; ?></span></td>
                             <td><?= date('d/m/Y', strtotime($data['tanggal_masuk'])); ?></td>
                             <td>
-                                <a href="?page=detail_bm&id=<?= $data['id_bm']; ?>" class="btn btn-primary btn-sm"><i class="fa-solid fa-info"></i></a>
                                 <form method="post" class="d-inline">
                                     <input type="hidden" value="<?= $data['id_bm']; ?>" name="id">
                                     <input type="hidden" value="<?= $data['id_barang']; ?>" name="id_brg">
                                     <input type="hidden" value="<?= $data['id']; ?>" name="id_h">
                                     <input type="hidden" value="<?= $data['jumlah_masuk']; ?>" name="jml">
-                                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

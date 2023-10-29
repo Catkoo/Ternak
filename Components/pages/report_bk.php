@@ -1,11 +1,4 @@
 <?php
-if(isset($_POST['delete'])){
-    if(deleteBarangKLR($_POST) > 0){
-        echo "<script>alert('Data Berhasil Dihapus!');</script>";
-        echo "<meta http-equiv='refresh' content='0;url=?page=barang-keluar'>";
-    }
-}
-
 $orderBy = 'tanggal_keluar DESC'; // Default sorting (urutkan berdasarkan tanggal keluar)
 
 if (isset($_POST['filter'])) {
@@ -15,7 +8,6 @@ if (isset($_POST['filter'])) {
 }
 ?>
 
-<a href="?page=add_bk" class="btn btn-primary btn-sm mb-3">+ Tambah Data</a>
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
@@ -33,7 +25,6 @@ if (isset($_POST['filter'])) {
                         <th>Jumlah</th>
                         <th>Bulan Keluar</th>
                         <th>Tujuan</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,13 +47,11 @@ if (isset($_POST['filter'])) {
                             <td><?= date('d/m/Y', strtotime($data['tanggal_keluar']));?></td>
                             <td><?= $data['tujuan'];?></td>
                             <td>
-                                <a href="?page=detail-bk&id=<?= $data['id_bk'];?>" class="btn btn-primary btn-sm"><i class="fa-solid fa-info"></i></a>
                                 <form method="post" class="d-inline">
                                     <input type="hidden" value="<?= $data['id_bk'];?>" name="id">
                                     <input type="hidden" value="<?= $data['id_barang'];?>" name="id_brg">
                                     <input type="hidden" value="<?= $data['id'];?>" name="id_h">
                                     <input type="hidden" value="<?= $data['jumlah_keluar'];?>" name="jml">
-                                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

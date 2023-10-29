@@ -1,7 +1,5 @@
-<!-- 
-    VARIABEL 'RESULTBRG ETC' DI PANGGIL DARI FILE FUNCTION.PHP
--->
-<div class="card-info ">
+
+<div class="card-info">
     <div class="card text-bg-primary">
         <i class="fa-solid fa-cubes icon"></i>
         <p class="text">Data Barang</p>
@@ -24,28 +22,26 @@
     </div>
 </div>
 
-<!-- 
-    PEMBUATAN QUERY YANG DIKIRIM KE FILE SCRIPT.PHP
-    UNTUK MENAMPILKAN DATA GRAFIK BARANG MASUK DAN KELUAR
--->
-<!-- <?php
-$sqlBm = $koneksi->query("SELECT SUM(jumlah_masuk) as jumlah_masuk FROM barang_masuk");
-while($resBM = $sqlBm->fetch_assoc()){
-    $dataBM[] = $resBM["jumlah_masuk"];
+    <div class="card text-bg-warning"> <!-- Ganti primary ke warning -->
+            <?php
+                // Ambil data stok barang dari database
+            $sqlStok = $koneksi->query("SELECT * FROM barang");
+            while ($dataStok = $sqlStok->fetch_assoc()) {
+            $namaBarang = $dataStok['nama_barang'];
+            $stokBarang = $dataStok['stok'];
+
+    // Periksa jika stok kurang dari 50
+    if ($stokBarang < 50) {
+        echo "<div class='alert alert-danger' role='alert'>Stok $namaBarang menipis ($stokBarang)</div>";
+    }
 }
+?>
 
-$sqlBk = $koneksi->query("SELECT SUM(jumlah_keluar) as jumlah_keluar FROM barang_keluar");
-while($resBK = $sqlBk->fetch_assoc()){
-    $dataBK[] = $resBK["jumlah_keluar"];
-}
-?> -->
+        </p>
+    </div>
+</div>
 
 
-<div class="row ml-1">
-    <div class="col-md-8">
-        <div class="card card-body">
-            <canvas id="myChart" style="margin: 0 auto;"></canvas>
-        </div>
     </div>
     <div class="col">
         <div class="card">

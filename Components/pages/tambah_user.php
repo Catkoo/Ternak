@@ -5,22 +5,31 @@ if (isset($_POST['addUser'])) {
     $username = $_POST['username'];
     $password = md5($_POST['password']);
     $rpassword = md5($_POST['rpassword']);
-
     $role = $_POST['role'];
 
-    if ($password !== $rpassword) {
-        echo "<script>alert('Password tidak sesuai!');</script>";
+    // Memeriksa apakah ada kolom yang kosong
+    if (empty($nama) || empty($username) || empty($_POST['password']) || empty($_POST['rpassword'])) {
+        echo "<script>alert('Data tidak boleh kosong!');</script>";
     } else {
-        $result = addUser($nama, $username, $password, $rpassword, $role);
+        // Lanjutkan pemrosesan jika tidak ada kolom yang kosong
 
-        if ($result === 1) {
-            echo "<script>alert('User berhasil ditambahkan!');</script>";
-        } else if ($result === -1) {
-            echo "<script>alert('Username sudah digunakan!');</script>";
-        } else if ($result === -2) {
-            echo "<script>alert('Error saat menambahkan user!');</script>";
+        // Lakukan validasi lainnya seperti yang telah Anda lakukan sebelumnya
+        // ...
+
+        if ($password !== $rpassword) {
+            echo "<script>alert('Password tidak sesuai!');</script>";
         } else {
-            echo "<script>alert('Gagal menambahkan user!');</script>";
+            $result = addUser($nama, $username, $password, $rpassword, $role);
+
+            if ($result === 1) {
+                echo "<script>alert('User berhasil ditambahkan!');</script>";
+            } else if ($result === -1) {
+                echo "<script>alert('Username sudah digunakan!');</script>";
+            } else if ($result === -2) {
+                echo "<script>alert('Error saat menambahkan user!');</script>";
+            } else {
+                echo "<script>alert('Gagal menambahkan user!');</script>";
+            }
         }
     }
 }
@@ -102,7 +111,7 @@ if (isset($_POST['deleteUser'])) {
                             <td><?= $no; ?></td>
                             <td><?= $data['nama']; ?></td>
                             <td><?= $data['username']; ?></td>
-                            <td><?= $data['password']; ?></td>
+                            <td>Password Telah Dienkripsi</td>
                             <td><?= $data['role']; ?></td> <!-- Menampilkan peran (role) -->
                             <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
                             <td>
@@ -139,7 +148,7 @@ if (isset($_POST['deleteUser'])) {
                                             <input type="password" class="form-control" id="password" name="password">
                                         </div>
                                         <div class="mb-2">
-                                             <label for="rpassword">Ulangi Password</label>
+                                             <label for="rpassword">Konfirmasi Password</label>
                                             <input type="password" class="form-control" id="rpassword" name="rpassword">
                                         </div>
                                     </div>
@@ -180,7 +189,7 @@ if (isset($_POST['deleteUser'])) {
                         <input type="password" class="form-control" id="password" name="password">
                     </div>
                     <div class="mb-2">
-                        <label for="rpassword">Ulangi Password</label>
+                        <label for="rpassword">Konfirmasi Password</label>
                         <input type="password" class="form-control" id="rpassword" name="rpassword">
                     </div>
                     <div class="mb-2">
