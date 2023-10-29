@@ -1,11 +1,8 @@
 <?php
 if (isset($_POST['addBK'])) {
-    if (empty($_SESSION['last_token']) || $_SESSION['last_token'] != $_POST['token']) {
-        $_SESSION['last_token'] = $_POST['token']; // Simpan token terakhir
-        if (tambahBarangKeluar($_POST) > 0) {
-            echo "<script>alert('Data Berhasil Di Tambahkan');</script>";
-            echo "<meta http-equiv='refresh' content='0;url=?page=barang-keluar'>";
-        }
+    if (tambahBarangKeluar($_POST) > 0) {
+        echo "<script>alert('Data Berhasil Di Tambahkan');</script>";
+        echo "<meta http-equiv='refresh' content='0;url=?page=barang-keluar'>";
     }
 }
 
