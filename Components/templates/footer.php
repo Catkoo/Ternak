@@ -1,6 +1,6 @@
     <footer>
         <div class="copyright">
-            <p>copyright &copy; 2023</p>
+            <p>copyright Ternak Ayam Gesek Km.19 &copy; 2023</p>
         </div>
     </footer>
 
