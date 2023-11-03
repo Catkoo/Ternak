@@ -106,7 +106,7 @@ if(isset($_POST['changepwd'])){
     }else{
         $koneksi->query("UPDATE users SET password='$new' WHERE id='$id'");
         echo "<script>alert('Password Berhasil Diubah');
-        window.location.href='index.php';</script>";
+        window.location.href='login.php';</script>";
     }
 }
 
@@ -298,25 +298,30 @@ function tambahBarangKeluar($data){
     $idBRG = $data['idBRG'];
     $tujuan = $data['tujuan'];
     $jml = $data['jml'];
-    
+
     $sql = $koneksi->query("SELECT * FROM barang WHERE id_barang='$idBRG'");
     $res = $sql->fetch_assoc();
 
-    // KONDISI UNTUK MENGECEK JUMLAH STOK
-    // JIKA JUMLAH STOK YANG AKAN DIKELUARKAN LEBIH BESAR,
-    // DARI JUMLAH STOK DI DATABASE MAKA AKAN MENAMPILKAN PESAN ERROR
-    if($jml > $res['stok']){
-        echo '<script>alert("jumlah barang kurang dari jumlah keluar, silahkan masukan kembali!");document.location.href="?page=add_bk";</script>';
-    }else{
-        $koneksi->query("INSERT INTO barang_keluar(id_bk, barang_id, tanggal_keluar, tujuan, jumlah_keluar)VALUES('$id', '$idBRG', NOW(), '$tujuan', '$jml' )");
-        
-        $koneksi->insert_id;
-        $koneksi->query("UPDATE barang SET stok=stok-$jml WHERE id_barang='$idBRG'");
-        $koneksi->query("INSERT INTO history(id, barang_id, bmk_id, role, jumlah, tgl)VALUES(NULL, '$idBRG', '$id', 'BK', '$jml', NOW())");
+    // Check if the stock is 0
+    if ($res['stok'] == 0) {
+        echo '<script>alert("Stok barang kosong. Data barang keluar tidak dapat ditambahkan.");</script>';
+        return false;
     }
 
-    return mysqli_affected_rows($koneksi);
+    // Check if the requested quantity is greater than the available stock
+    if ($jml > $res['stok']) {
+        echo '<script>alert("Jumlah barang yang akan dikeluarkan melebihi stok yang ada. Silakan cek kembali.");</script>';
+        return false;
+    } else {
+        $koneksi->query("INSERT INTO barang_keluar(id_bk, barang_id, tanggal_keluar, tujuan, jumlah_keluar) VALUES('$id', '$idBRG', NOW(), '$tujuan', '$jml')");
+        $koneksi->insert_id;
+        $koneksi->query("UPDATE barang SET stok=stok-$jml WHERE id_barang='$idBRG'");
+        $koneksi->query("INSERT INTO history(id, barang_id, bmk_id, role, jumlah, tgl) VALUES(NULL, '$idBRG', '$id', 'BK', '$jml', NOW())");
+    }
+
+    return true;
 }
+
 function deleteBarangKLR($data){
     global $koneksi;
 
@@ -332,7 +337,7 @@ function deleteBarangKLR($data){
     return mysqli_affected_rows($koneksi);
 }
 
-//----------------
+//User
 function addUser($nama, $username, $password, $rpassword, $role) {
     global $koneksi;
 

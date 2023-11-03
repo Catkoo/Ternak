@@ -40,19 +40,15 @@ if (isset($_POST['filter'])) {
         <tbody>
             <?php
             $no = 1;
-            if (empty($filterStart)) {
-                $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM'");
-            } else {
-                $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' AND DATE_FORMAT(tanggal_masuk, '%Y-%m') >= '$filterStart'");
+            $sqlFilterCondition = '';
+            if (!empty($filterStart)) {
+                // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
+                $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
             }
-            $dataLaporanFiltered = array();
-            $existing_ids = array(); // Membuat array untuk melacak ID yang sudah ditampilkan
+
+            $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition");
+            
             while ($data = $sql->fetch_assoc()) {
-                // Pengecekan apakah ID sudah ditampilkan, jika iya, lewati
-                if (in_array($data['id_bm'], $existing_ids)) {
-                    continue;
-                }
-                $existing_ids[] = $data['id_bm']; // Menambahkan ID ke dalam array
                 ?>
                 <tr>
                     <td><?= $no; ?></td>
@@ -78,6 +74,7 @@ if (isset($_POST['filter'])) {
         </tbody>
     </table>
 </div>
+
 
 
 <script>
