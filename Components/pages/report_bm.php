@@ -14,7 +14,6 @@ if (isset($_POST['filter'])) {
 }
 ?>
 
-
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
@@ -23,53 +22,65 @@ if (isset($_POST['filter'])) {
 </form>
 
 <div class="card">
-<div class="card-body">
-<div class="table-responsive">
-    <table class="table" id="data-table">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Barang</th>
-                <th>Supplier</th>
-                <th>Jumlah</th>
-                <th>Bulan Masuk</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $no = 1;
-            $sqlFilterCondition = '';
-            if (!empty($filterStart)) {
-                // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
-                $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
-            }
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Barang</th>
+                        <th>Supplier</th>
+                        <th>Jumlah</th>
+                        <th>Bulan Masuk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $no = 1;
+                    $sqlFilterCondition = '';
+                    $existing_ids = array();
 
-            $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition");
-            
-            while ($data = $sql->fetch_assoc()) {
-                ?>
-                <tr>
-                    <td><?= $no; ?></td>
-                    <td><?= $data['nama_barang']; ?></td>
-                    <td><?= $data['nama_sup']; ?></td>
-                    <td><span class="badge text-bg-success">+ <?= $data['jumlah_masuk']; ?></span></td>
-                    <td><?= date('d/m/Y', strtotime($data['tanggal_masuk'])); ?></td>
-                    <td>
-                        <form method="post" class="d-inline">
-                            <input type="hidden" value="<?= $data['id_bm']; ?>" name="id">
-                            <input type="hidden" value="<?= $data['id_barang']; ?>" name="id_brg">
-                            <input type="hidden" value="<?= $data['id']; ?>" name="id_h">
-                            <input type="hidden" value="<?= $data['jumlah_masuk']; ?>" name="jml">
-                        </form>
-                    </td>
-                </tr>
-            <?php
-            $no++;
-            }
-            ?>
-        </tbody>
-    </table>
+                    if (!empty($filterStart)) {
+                        // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
+                        $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
+                    }
+
+                    $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition ORDER BY tanggal_masuk DESC");
+
+                    while ($data = $sql->fetch_assoc()) {
+                        // Pengecekan apakah ID sudah ditampilkan, jika iya, lewati
+                        if (in_array($data['id_bm'], $existing_ids)) {
+                            continue;
+                        }
+
+                        $existing_ids[] = $data['id_bm']; // Menambahkan ID ke dalam array
+                        ?>
+                        <tr>
+                            <td><?= $no; ?></td>
+                            <td><?= $data['nama_barang']; ?></td>
+                            <td><?= $data['nama_sup']; ?></td>
+                            <td><span class="badge text-bg-success">+ <?= $data['jumlah_masuk']; ?></span></td>
+                            <td><?= date('d/m/Y', strtotime($data['tanggal_masuk'])); ?></td>
+                            <td>
+                                <form method="post" class="d-inline">
+                                    <input type="hidden" value="<?= $data['id_bm']; ?>" name="id">
+                                    <input type="hidden" value="<?= $data['id_barang']; ?>" name="id_brg">
+                                    <input type="hidden" value="<?= $data['id']; ?>" name="id_h">
+                                    <input type="hidden" value="<?= $data['jumlah_masuk']; ?>" name="jml">
+                                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php
+                        $no++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 
 <script>
 var script = document.createElement('script');

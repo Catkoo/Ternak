@@ -20,7 +20,6 @@ if(isset($_POST['delete'])){
 }
 ?>
 
-
 <button class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addBarang">+ Tambah Data Barang</button>
 <div class="card">
     <div class="card-body">
@@ -36,10 +35,10 @@ if(isset($_POST['delete'])){
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                    <tbody>
+                <tbody>
                     <?php
-                    $no =1;
-                    $sql = $koneksi->query("SELECT barang.*, satuan.id_satuan, satuan.nama_satuan FROM barang JOIN satuan ON satuan.id_satuan=barang.satuan_id");
+                    $no = 1;
+                    $sql = $koneksi->query("SELECT barang.*, satuan.id_satuan, satuan.nama_satuan FROM barang JOIN satuan ON satuan.id_satuan=barang.satuan_id ORDER BY update_at DESC");
                     while($data = $sql->fetch_assoc()){?>
                         <tr>
                             <td><?= $no;?></td>
@@ -62,42 +61,42 @@ if(isset($_POST['delete'])){
                         <div class="modal fade" id="update<?= $data['id_barang'];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Update Data Barang</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form method="post" enctype="multipart/form-data">
-                                    <div class="modal-body">
-                                        <div class="mb-2">
-                                            <label for="">ID</label>
-                                            <input type="text" class="form-control" name="id" value="<?= $data['id_barang'];?>" readonly>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="">Nama Barang</label>
-                                            <input type="text" class="form-control" name="nama_barang" value="<?= $data['nama_barang'];?>">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="">Stok Saat ini</label>
-                                            <select name="satuan" class="form-control">
-                                                <?php 
-                                                $qry = $koneksi->query("SELECT * FROM satuan");
-                                                while($stn = $qry->fetch_assoc()){?>
-                                                    <option value='<?= $stn['id_satuan'];?>' <?php if($stn['id_satuan'] == $data['satuan_id']){
-                                                        echo "selected";
-                                                    }?> ><?= $stn['nama_satuan'];?></option>
-                                                <?php }?>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="">Foto Produk</label>
-                                            <input type="hidden" class="form-control" name="imgLama" value="<?= $data['foto_barang'];?>">
-                                            <input type="file" class="form-control" name="newImg">
-                                        </div>
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Update Data Barang</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary" name="editBarang">Submit</button>
-                                    </div>
-                                </form>
+                                    <form method="post" enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                            <div class="mb-2">
+                                                <label for="">ID</label>
+                                                <input type="text" class="form-control" name="id" value="<?= $data['id_barang'];?>" readonly>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label for="">Nama Barang</label>
+                                                <input type="text" class="form-control" name="nama_barang" value="<?= $data['nama_barang'];?>">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label for="">Stok Saat ini</label>
+                                                <select name="satuan" class="form-control">
+                                                    <?php 
+                                                    $qry = $koneksi->query("SELECT * FROM satuan");
+                                                    while($stn = $qry->fetch_assoc()){?>
+                                                        <option value='<?= $stn['id_satuan'];?>' <?php if($stn['id_satuan'] == $data['satuan_id']){
+                                                            echo "selected";
+                                                        }?> ><?= $stn['nama_satuan'];?></option>
+                                                    <?php }?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label for="">Foto Produk</label>
+                                                <input type="hidden" class="form-control" name="imgLama" value="<?= $data['foto_barang'];?>">
+                                                <input type="file" class="form-control" name="newImg">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary" name="editBarang">Submit</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -113,41 +112,40 @@ if(isset($_POST['delete'])){
 <div class="modal fade" id="addBarang" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Tambah Data Barang</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form method="post" enctype="multipart/form-data">
-            <div class="modal-body">
-                <div class="mb-2">
-                    <label for="">ID</label>
-                    <input type="text" class="form-control" name="id" value="<?= $idBarang;?>" readonly>
-                </div>
-                <div class="mb-2">
-                    <label for="">Nama Barang</label>
-                    <input type="text" class="form-control" name="nama_barang" required>
-                </div>
-                <div class="mb-2">
-                    <label for="">Satuan</label>
-                    <select name="satuan" class="form-control" required>
-                        <option value="">Select One</option>
-                        <?php 
-                        // QUERY PEMANGGILAN TABLE SATUAN
-                        $qry = $koneksi->query("SELECT * FROM satuan");
-                        while($stn = $qry->fetch_assoc()){
-                            echo "<option value='".$stn['id_satuan']."'>".$stn['nama_satuan']."</option>";
-                        }?>
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label for="">Upload Gambar</label>
-                    <input type="file" class="form-control" name="gambar" required>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Tambah Data Barang</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" name="tambahBarang">Submit</button>
-            </div>
-        </form>
+            <form method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label for="">ID</label>
+                        <input type="text" class="form-control" name="id" value="<?= $idBarang;?>" readonly>
+                    </div>
+                    <div class="mb-2">
+                        <label for="">Nama Barang</label>
+                        <input type="text" class="form-control" name="nama_barang" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="">Satuan</label>
+                        <select name="satuan" class="form-control" required>
+                            <option value="">Select One</option>
+                            <?php 
+                            $qry = $koneksi->query("SELECT * FROM satuan");
+                            while($stn = $qry->fetch_assoc()){
+                                echo "<option value='".$stn['id_satuan']."'>".$stn['nama_satuan']."</option>";
+                            }?>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label for="">Upload Gambar</label>
+                        <input type="file" class="form-control" name="gambar" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="tambahBarang">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

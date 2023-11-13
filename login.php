@@ -4,13 +4,17 @@ include "config/koneksi.php";
 include "config/function.php";
 
 if (isset($_SESSION['login'])) {
-    // Jika pengguna sudah login, alihkan ke halaman yang sesuai
-    if ($_SESSION['role'] === 'admin') {
+    // Check if the user is logged in by checking the presence of 'login' in the session
+
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        // Check if 'role' is set and its value is 'admin', then redirect to 'index.php'
         header('location: index.php');
-    } elseif ($_SESSION['role'] === 'pimpinan') {
+    } elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'pimpinan') {
+        // Check if 'role' is set and its value is 'pimpinan', then redirect to 'index_pemimpin.php'
         header('location: index_pemimpin.php');
     }
 }
+
 
 if (isset($_POST['login'])) {
     if (loginFunc($_POST) > 0) {

@@ -20,7 +20,7 @@ if (isset($_POST['filter'])) {
     <input type="month" class="form-control" name="start" required>
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
     <button id="cetakPDFFiltered" class="btn btn-primary btn-sm">Cetak Laporan Filtered (PDF)</button>
-    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan Semua (PDF)</button>
+    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan</button>
 </form>
 
 <div class="card">
@@ -38,18 +38,26 @@ if (isset($_POST['filter'])) {
             </tr>
         </thead>
         <tbody>
-            <?php
-            $no = 1;
-            $sqlFilterCondition = '';
-            if (!empty($filterStart)) {
-                // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
-                $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
-            }
+                    <?php
+                    $no = 1;
+                    $sqlFilterCondition = '';
+                    $existing_ids = array();
 
-            $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition");
-            
-            while ($data = $sql->fetch_assoc()) {
-                ?>
+                    if (!empty($filterStart)) {
+                        // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
+                        $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
+                    }
+
+                    $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition ORDER BY tanggal_masuk DESC");
+
+                    while ($data = $sql->fetch_assoc()) {
+                        // Pengecekan apakah ID sudah ditampilkan, jika iya, lewati
+                        if (in_array($data['id_bm'], $existing_ids)) {
+                            continue;
+                        }
+
+                        $existing_ids[] = $data['id_bm']; // Menambahkan ID ke dalam array
+                        ?>
                 <tr>
                     <td><?= $no; ?></td>
                     <td><?= $data['nama_barang']; ?></td>

@@ -35,7 +35,7 @@ if (isset($_POST['filter'])) {
                         $filterCondition = "AND DATE_FORMAT(tanggal_keluar, '%Y-%m') = '$filterStart'";
                     }
 
-                    $sql = $koneksi->query("SELECT * FROM barang_keluar as bk JOIN barang as b ON bk.barang_id=b.id_barang LEFT JOIN satuan as st ON st.id_satuan=b.satuan_id JOIN history as h ON h.bmk_id=bk.id_bk WHERE role='BK' $filterCondition group by id_bk");
+                    $sql = $koneksi->query("SELECT * FROM barang_keluar as bk JOIN barang as b ON bk.barang_id=b.id_barang LEFT JOIN satuan as st ON st.id_satuan=b.satuan_id JOIN history as h ON h.bmk_id=bk.id_bk WHERE role='BK' $filterCondition group by id_bk ORDER BY tanggal_keluar DESC");
                     $dataLaporanFiltered = array();
 
                     while($data = $sql->fetch_assoc()) {

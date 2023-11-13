@@ -92,21 +92,27 @@ if(isset($_POST['changepwd'])){
     $new = md5($_POST['newpassword']);
     $id = $_SESSION['login']['id'];
 
-    // QUERY MENGAMBIL ID USER LOGIN
-    $qry = $koneksi->query("SELECT * FROM users WHERE id='$id'");
-    $res = $qry->fetch_assoc();
-    
-    // MENGECEK PASSWORD LAMA YANG DIINPUT
-    // APAKAH COCOK DENGAN YANG TERDAPAT DALAM DATABASE
-    // JIKA TIDAK MAKA AKAN MENAMPILKAN PESAN ERROR
-    // JIKA SESUAI PASSWORD AKAN DI UPDATE DENGAN PASSWORD BARU
-    if($old != $res['password']){
-        echo "<script>alert('Password Tidak Sesuai');
+    // Check if the new password is empty
+    if(empty($_POST['newpassword'])){
+        echo "<script>alert('Password Baru tidak boleh kosong');
         window.location.href='?page='</script>";
-    }else{
-        $koneksi->query("UPDATE users SET password='$new' WHERE id='$id'");
-        echo "<script>alert('Password Berhasil Diubah');
-        window.location.href='login.php';</script>";
+    } else {
+        // QUERY MENGAMBIL ID USER LOGIN
+        $qry = $koneksi->query("SELECT * FROM users WHERE id='$id'");
+        $res = $qry->fetch_assoc();
+
+        // MENGECEK PASSWORD LAMA YANG DIINPUT
+        // APAKAH COCOK DENGAN YANG TERDAPAT DALAM DATABASE
+        // JIKA TIDAK MAKA AKAN MENAMPILKAN PESAN ERROR
+        // JIKA SESUAI PASSWORD AKAN DI UPDATE DENGAN PASSWORD BARU
+        if($old != $res['password']){
+            echo "<script>alert('Password Tidak Sesuai');
+            window.location.href='?page='</script>";
+        } else {
+            $koneksi->query("UPDATE users SET password='$new' WHERE id='$id'");
+            echo "<script>alert('Password Berhasil Diubah');
+            window.location.href='login.php';</script>";
+        }
     }
 }
 
