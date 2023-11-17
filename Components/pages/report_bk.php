@@ -1,4 +1,11 @@
 <?php
+if(isset($_POST['delete'])){
+    if(deleteBarangKLR($_POST) > 0){
+        echo "<script>alert('Data Berhasil Dihapus!');</script>";
+        echo "<meta http-equiv='refresh' content='0;url=?page=barang-keluar'>";
+    }
+}
+
 $orderBy = 'tanggal_keluar DESC'; // Default sorting (urutkan berdasarkan tanggal keluar)
 
 if (isset($_POST['filter'])) {
@@ -11,8 +18,10 @@ if (isset($_POST['filter'])) {
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
-    <button id="cetakPDFFiltered" class="btn btn-primary btn-sm">Cetak Laporan Filtered (PDF)</button>
-    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan Semua (PDF)</button>
+    <!-- Tombol Cetak Laporan Filtered dihapus -->
+    <!-- <button id="cetakPDFFiltered" class="btn btn-primary btn-sm">Cetak Laporan Filtered (PDF)</button> -->
+    <!-- Tombol Cetak Laporan Semua -->
+    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan</button>
 </form>
 <div class="card">
     <div class="card-body">
@@ -104,7 +113,23 @@ if (isset($_POST['filter'])) {
                             // Data laporan akan dimasukkan di sini
                         ]
                     }
-                }
+                },
+                 {
+                                text: '\n\n\n\n', // Berikan spasi
+                            },
+                {
+                                columns: [
+                                    {
+                                        text: '',
+                                        alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
+                                    },
+                                    {
+                                        text: 'Mengetahui\n\n\n\n\n\nPimpinan',
+                                        alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
+                                        margin: [0, 0, 40, 0] // Atur margin kanan
+                                    }
+                                ]
+                    }
             ],
             styles: {
                 header: {
@@ -149,36 +174,6 @@ if (isset($_POST['filter'])) {
         // Buat dan unduh dokumen PDF
         pdfMake.createPdf(docDefinition).download(title + '.pdf');
     }
-
-    // Cetak Laporan Filtered (PDF)
-    document.getElementById("cetakPDFFiltered").addEventListener("click", function () {
-        // Ambil bulan yang diisi dalam input
-        var selectedMonth = document.querySelector("input[type='month']").value;
-
-        // Periksa apakah bulan telah diisi
-        if (selectedMonth) {
-            // Ambil data laporan yang ingin dicetak dari tabel
-            var dataLaporanFiltered = [];
-            var table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
-            var rows = table.getElementsByTagName('tr');
-            for (var i = 0; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                dataLaporanFiltered.push({
-                    no: cells[0].textContent,
-                    nama_barang: cells[1].textContent,
-                    jumlah_keluar: cells[2].textContent,
-                    bulan_keluar: cells[3].textContent,
-                    tujuan: cells[4].textContent
-                });
-            }
-
-            // Panggil fungsi generatePDF dengan data laporan
-            generatePDF(dataLaporanFiltered, 'Laporan Barang Keluar');
-        } else {
-            // Tampilkan pesan kesalahan jika bulan belum diisi
-            alert('Silakan isi bulan terlebih dahulu sebelum mencetak laporan berdasarkan filter.');
-        }
-    });
 
     // Cetak Laporan Semua (PDF)
     document.getElementById("cetakPDFAll").addEventListener("click", function () {

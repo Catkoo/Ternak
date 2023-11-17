@@ -83,11 +83,11 @@ hr{
 
 
 .sidebar .sidebar-body ul li:hover {
-    background-color: #f1f1f13a;
+    background-color: #00A9FF;
 }
 
 .sidebar .sidebar-body ul li.active {
-    background-color: #f1f1f13a;
+    background-color: #00A9FF;
 }
 
 /*========================================================
