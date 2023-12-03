@@ -18,7 +18,7 @@ if (isset($_POST['filter'])) {
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
-    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan</button>
+    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Download PDF</button>
 </form>
 
 <div class="card">
@@ -78,130 +78,118 @@ if (isset($_POST['filter'])) {
             </table>
         </div>
 
-        <script>
-            var script = document.createElement('script');
-            <script src="node_modules/pdfmake/build/pdfmake.js"></script>
-            <script>
-                // Fungsi untuk membuat laporan PDF
-                function generatePDF(data) {
-                    var currentDate = new Date().toLocaleDateString('id-ID');
+      <script>
+    // Fungsi untuk membuat laporan PDF
+    function generatePDF(data) {
+        var currentDate = new Date().toLocaleDateString('id-ID');
 
-                    var docDefinition = {
-                        content: [
-                            {
-                                text: 'Laporan Barang Masuk',
-                                style: 'header'
-                            },
-                            {
-                                text: 'Ternak Ayam Gesek KM.19',
-                                style: 'subheader'
-                            },
-                            {
-                                canvas: [
-                                    {
-                                        type: 'line',
-                                        x1: 0,
-                                        y1: 0,
-                                        x2: 513, // Sesuaikan lebar halaman
-                                        y2: 0,
-                                        lineWidth: 3,
-                                        lineColor: 'black'
-                                    }
-                                ]
-                            },
-                            {
-                                table: {
-                                    headerRows: 1,
-                                    widths: [30, '*', '*', 40, 70],
-                                    body: [
-                                        [{ text: 'No', style: 'tableHeader' }, { text: 'Nama Barang', style: 'tableHeader' }, { text: 'Supplier', style: 'tableHeader' }, { text: 'Jumlah', style: 'tableHeader' }, { text: 'Bulan Masuk', style: 'tableHeader' }],
-                                        // Data laporan akan dimasukkan di sini
-                                    ]
-                                }
-                            },
-                            {
-                                text: '\n\n\n\n', // Berikan spasi
-                            },
-                            {
-                                columns: [
-                                    {
-                                        text: '',
-                                        alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
-                                    },
-                                    {
-                                        text: 'Mengetahui\n\n\n\n\n\nPimpinan',
-                                        alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
-                                        margin: [0, 0, 40, 0] // Atur margin kanan
-                                    }
-                                ]
-                            }
-                        ],
-                        styles: {
-                            header: {
-                                fontSize: 18,
-                                bold: true,
-                                alignment: 'center',
-                                margin: [0, 0, 0, 20] // Atur margin bawah
-                            },
-                            subheader: {
-                                fontSize: 12,
-                                bold: true,
-                                alignment: 'center',
-                                margin: [0, 0, 0, 15] // Atur margin bawah
-                            },
-                            tableHeader: {
-                                fontSize: 12,
-                                bold: true,
-                                fillColor: '#CCCCCC', // Warna latar belakang
-                            }
-                        },
-                        footer: function (currentPage, pageCount) {
-                            return {
-                                text: 'Tanggal Cetak: ' + currentDate,
-                                style: 'footer', // Menentukan gaya teks footer
-                                alignment: 'right', // Mencetak tanggal di sudut kanan bawah
-                                margin: [0, 0, 40, 20] // Atur margin bawah dan kanan
-                            };
+        var docDefinition = {
+            content: [
+                {
+                    text: 'Laporan Barang Masuk',
+                    style: 'header'
+                },
+                {
+                    text: 'Ternak Ayam Pak Asun',
+                    style: 'subheader'
+                },
+                {
+                    canvas: [
+                        {
+                            type: 'line',
+                            x1: 0,
+                            y1: 0,
+                            x2: 513, // Sesuaikan lebar halaman
+                            y2: 0,
+                            lineWidth: 3,
+                            lineColor: 'black'
                         }
-                    };
-
-                    // Memasukkan data dari parameter ke dalam dokumen PDF
-                    data.forEach(function (row) {
-                        docDefinition.content[3].table.body.push([
-                            row.no,
-                            row.nama_barang,
-                            row.nama_sup,
-                            row.jumlah_masuk,
-                            row.bulan_masuk
-                        ]);
-                    });
-
-                    // Buat dan unduh dokumen PDF
-                    pdfMake.createPdf(docDefinition).download('Laporan Barang Masuk.pdf');
-                }
-
-                // Cetak Laporan Semua (PDF)
-                document.getElementById("cetakPDFAll").addEventListener("click", function () {
-                    // Ambil data laporan semua dari tabel
-                    var dataLaporanAll = [];
-                    var table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
-                    var rows = table.getElementsByTagName('tr');
-                    for (var i = 0; i < rows.length; i++) {
-                        var cells = rows[i].getElementsByTagName('td');
-                        dataLaporanAll.push({
-                            no: cells[0].textContent,
-                            nama_barang: cells[1].textContent,
-                            nama_sup: cells[2].textContent,
-                            jumlah_masuk: cells[3].textContent,
-                            bulan_masuk: cells[4].textContent
-                        });
+                    ]
+                },
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: [30, '*', '*', 40, 70],
+                        body: [
+                            [{ text: 'No', style: 'tableHeader' }, { text: 'Nama Barang', style: 'tableHeader' }, { text: 'Supplier', style: 'tableHeader' }, { text: 'Jumlah', style: 'tableHeader' }, { text: 'Bulan Masuk', style: 'tableHeader' }],
+                            // Data laporan akan dimasukkan di sini
+                        ]
                     }
+                },
+                {
+                    text: '\n\n\n\n', // Berikan spasi
+                },
+                {
+                    columns: [
+                        {
+                            text: '',
+                            alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
+                        },
+                        {
+                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\nPimpinan `,
+                            alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
+                            margin: [0, 0, 40, 0] // Atur margin kanan
+                        }
+                    ]
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    alignment: 'center',
+                    margin: [0, 0, 0, 20] // Atur margin bawah
+                },
+                subheader: {
+                    fontSize: 12,
+                    bold: true,
+                    alignment: 'center',
+                    margin: [0, 0, 0, 15] // Atur margin bawah
+                },
+                tableHeader: {
+                    fontSize: 12,
+                    bold: true,
+                    fillColor: '#CCCCCC', // Warna latar belakang
+                }
+            }
+        };
 
-                    // Panggil fungsi generatePDF dengan data laporan
-                    generatePDF(dataLaporanAll);
-                });
+        // Memasukkan data dari parameter ke dalam dokumen PDF
+        data.forEach(function (row) {
+            docDefinition.content[3].table.body.push([
+                row.no,
+                row.nama_barang,
+                row.nama_sup,
+                row.jumlah_masuk,
+                row.bulan_masuk
+            ]);
+        });
 
-            </script>
+        // Buat dan unduh dokumen PDF
+        pdfMake.createPdf(docDefinition).download('Laporan Barang Masuk.pdf');
+    }
+
+    // Cetak Laporan Semua (PDF)
+    document.getElementById("cetakPDFAll").addEventListener("click", function () {
+        // Ambil data laporan semua dari tabel
+        var dataLaporanAll = [];
+        var table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            dataLaporanAll.push({
+                no: cells[0].textContent,
+                nama_barang: cells[1].textContent,
+                nama_sup: cells[2].textContent,
+                jumlah_masuk: cells[3].textContent,
+                bulan_masuk: cells[4].textContent
+            });
+        }
+
+        // Panggil fungsi generatePDF dengan data laporan
+        generatePDF(dataLaporanAll);
+    });
+</script>
         </div>
     </div>
 </div>

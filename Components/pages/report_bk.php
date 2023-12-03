@@ -21,7 +21,7 @@ if (isset($_POST['filter'])) {
     <!-- Tombol Cetak Laporan Filtered dihapus -->
     <!-- <button id="cetakPDFFiltered" class="btn btn-primary btn-sm">Cetak Laporan Filtered (PDF)</button> -->
     <!-- Tombol Cetak Laporan Semua -->
-    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Cetak Laporan</button>
+    <button id="cetakPDFAll" class="btn btn-primary btn-sm">Download PDF</button>
 </form>
 <div class="card">
     <div class="card-body">
@@ -81,6 +81,8 @@ if (isset($_POST['filter'])) {
 
     // Fungsi untuk membuat laporan PDF
     function generatePDF(data, title) {
+        var currentDate = new Date().toLocaleDateString('id-ID');
+
         var docDefinition = {
             content: [
                 {
@@ -88,7 +90,7 @@ if (isset($_POST['filter'])) {
                     style: 'header'
                 },
                 {
-                    text: 'Ternak Ayam Gesek KM.19',
+                    text: 'Ternak Ayam Pak Asun',
                     style: 'subheader'
                 },
                 {
@@ -107,29 +109,29 @@ if (isset($_POST['filter'])) {
                 {
                     table: {
                         headerRows: 1,
-                        widths: [30, '*', '*', 40, 70],
+                        widths: [30, '*', 40, 70, '*'],
                         body: [
                             [{ text: 'No', style: 'tableHeader' }, { text: 'Nama Barang', style: 'tableHeader' }, { text: 'Jumlah', style: 'tableHeader' }, { text: 'Bulan Keluar', style: 'tableHeader' }, { text: 'Tujuan', style: 'tableHeader' }],
                             // Data laporan akan dimasukkan di sini
                         ]
                     }
                 },
-                 {
-                                text: '\n\n\n\n', // Berikan spasi
-                            },
                 {
-                                columns: [
-                                    {
-                                        text: '',
-                                        alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
-                                    },
-                                    {
-                                        text: 'Mengetahui\n\n\n\n\n\nPimpinan',
-                                        alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
-                                        margin: [0, 0, 40, 0] // Atur margin kanan
-                                    }
-                                ]
-                    }
+                    text: '\n\n\n\n', // Berikan spasi
+                },
+                {
+                    columns: [
+                        {
+                            text: '',
+                            alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
+                        },
+                        {
+                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\nPimpinan`,
+                            alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
+                            margin: [0, 0, 40, 0] // Atur margin kanan
+                        }
+                    ]
+                }
             ],
             styles: {
                 header: {
@@ -150,15 +152,7 @@ if (isset($_POST['filter'])) {
                     fillColor: '#CCCCCC', // Warna latar belakang
                 }
             },
-         footer: function (currentPage, pageCount) {
-            return {
-                text: 'Tanggal Cetak: ' + new Date().toLocaleDateString('id-ID'),
-                style: 'footer', // Menentukan gaya teks footer
-                alignment: 'right', // Mencetak tanggal di sudut kanan bawah
-                margin: [0, 0, 40, 20] // Atur margin bawah dan kanan
-            };
-        }
-    };
+        };
 
         // Memasukkan data dari parameter ke dalam dokumen PDF
         data.forEach(function (row) {
@@ -181,7 +175,7 @@ if (isset($_POST['filter'])) {
         var dataLaporanAll = [];
         var table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
         var rows = table.getElementsByTagName('tr');
-        for (var i = 0; i < rows.length; i++) {
+        for (var i = 0; rows && i < rows.length; i++) {
             var cells = rows[i].getElementsByTagName('td');
             dataLaporanAll.push({
                 no: cells[0].textContent,
