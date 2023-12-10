@@ -211,7 +211,13 @@ function tambahSatuan($data){
     $id = $data['id'];
     $satuan = $data['nama_satuan'];
 
-    $koneksi->query("INSERT INTO satuan(id_satuan, nama_satuan, update_at)VALUES('$id', '$satuan', NOW())");
+    // Validasi jika nama satuan kosong
+    if (empty($satuan)) {
+        echo "<script>alert('Nama Satuan tidak boleh kosong!');</script>";
+        return false; // Keluar dari fungsi jika nama satuan kosong
+    }
+
+    $koneksi->query("INSERT INTO satuan(id_satuan, nama_satuan, update_at) VALUES('$id', '$satuan', NOW())");
     return mysqli_affected_rows($koneksi);
 }
 function deleteSatuan($data){
@@ -227,10 +233,15 @@ function editSatuan($data){
     $id = $data['id'];
     $name = $data['nama_satuan'];
 
+    // Validasi jika nama satuan kosong
+    if (empty($name)) {
+        echo "<script>alert('Nama Satuan tidak boleh kosong!');</script>";
+        return false; // Keluar dari fungsi jika nama satuan kosong
+    }
+
     $koneksi->query("UPDATE satuan SET nama_satuan='$name', update_at=NOW() WHERE id_satuan='$id'");
     return mysqli_affected_rows($koneksi);
 }
-
 
 // FUNCTION TAMBAH, EDIT, DELETE DATA SUPPLIER
 function tambahSupplier($data){
@@ -241,9 +252,16 @@ function tambahSupplier($data){
     $no = $data['no'];
     $alamat = $data['alamat'];
 
+    // Validasi jika salah satu data kosong
+    if (empty($id) || empty($name) || empty($no) || empty($alamat)) {
+        echo "<script>alert('Semua data harus diisi!');</script>";
+        return false; // Keluar dari fungsi jika salah satu data kosong
+    }
+
     $koneksi->query("INSERT INTO supplier(id_sup, nama_sup, telepon_sup, alamat_sup, latest_update)VALUES('$id', '$name','$no', '$alamat', NOW())");
     return mysqli_affected_rows($koneksi);
 }
+
 function editSupplier($data){
     global $koneksi;
 
@@ -252,9 +270,16 @@ function editSupplier($data){
     $no = $data['no'];
     $alamat = $data['alamat'];
 
+    // Validasi jika salah satu data kosong
+    if (empty($name) || empty($no) || empty($alamat)) {
+        echo "<script>alert('Semua data harus diisi!');</script>";
+        return false; // Keluar dari fungsi jika salah satu data kosong
+    }
+
     $koneksi->query("UPDATE supplier SET nama_sup='$name', telepon_sup='$no', alamat_sup='$alamat', latest_update=NOW() WHERE id_sup = '$id'");
     return mysqli_affected_rows($koneksi);
 }
+
 function deleteSupplier($data){
     global $koneksi;
     $id = $data['id'];

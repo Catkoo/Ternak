@@ -7,16 +7,18 @@ if (isset($_POST['delete'])) {
 }
 
 $filterStart = '';
+$filterNamaBarang = '';
 
 if (isset($_POST['filter'])) {
-    // Ambil bulan awal dari form
+    // Ambil bulan awal dan nama barang dari form
     $filterStart = $_POST['start'];
+    $filterNamaBarang = $_POST['nama_barang'];
 }
 ?>
 
-
 <form method="post" class="form-report" style="">
-    <input type="month" class="form-control" name="start" required>
+    <input type="month" class="form-control" name="start" value="<?= $filterStart ?>" required>
+    <input type="text" class="form-control" name="nama_barang" placeholder="Nama Barang" value="<?= $filterNamaBarang ?>">
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
     <button id="cetakPDFAll" class="btn btn-primary btn-sm">Download PDF</button>
 </form>
@@ -42,7 +44,12 @@ if (isset($_POST['filter'])) {
 
                     if (!empty($filterStart)) {
                         // Jika filter bulan diisi, tambahkan kondisi ke kueri SQL
-                        $sqlFilterCondition = "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
+                        $sqlFilterCondition .= "AND DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filterStart'";
+                    }
+                    
+                    if (!empty($filterNamaBarang)) {
+                        // Jika filter nama barang diisi, tambahkan kondisi ke kueri SQL
+                        $sqlFilterCondition .= " AND b.nama_barang LIKE '%$filterNamaBarang%'";
                     }
 
                     $sql = $koneksi->query("SELECT *, DATE_FORMAT(tanggal_masuk, '%M %Y') AS bulan_masuk FROM barang_masuk as bm JOIN barang as b ON bm.barang_id=b.id_barang JOIN supplier as sp ON bm.supplier_id=sp.id_sup JOIN history as h ON h.bmk_id=bm.id_bm WHERE role='BM' $sqlFilterCondition ORDER BY tanggal_masuk DESC");
@@ -77,6 +84,9 @@ if (isset($_POST['filter'])) {
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
 
       <script>
     // Fungsi untuk membuat laporan PDF
@@ -126,7 +136,7 @@ if (isset($_POST['filter'])) {
                             alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
                         },
                         {
-                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\nPimpinan `,
+                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\n(                                   ) `,
                             alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
                             margin: [0, 0, 40, 0] // Atur margin kanan
                         }

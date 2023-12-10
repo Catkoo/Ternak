@@ -3,9 +3,13 @@ session_start();
 include "config/koneksi.php";
 include "config/function.php";
 
+if (isset($_SESSION['logout_message'])) {
+    echo '<script>alert("' . $_SESSION['logout_message'] . '");</script>';
+    unset($_SESSION['logout_message']); // Hapus pesan setelah menampilkannya
+}
+
 if (isset($_SESSION['login'])) {
     // Check if the user is logged in by checking the presence of 'login' in the session
-
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
         // Check if 'role' is set and its value is 'admin', then redirect to 'index.php'
         header('location: index.php');
@@ -15,10 +19,12 @@ if (isset($_SESSION['login'])) {
     }
 }
 
-
 if (isset($_POST['login'])) {
     if (loginFunc($_POST) > 0) {
-        // Setelah login berhasil, cek peran pengguna
+        // Setelah login berhasil, tampilkan pesan alert menggunakan JavaScript
+        echo '<script>alert("Login Berhasil!");</script>';
+
+        // Setelah itu, cek peran pengguna
         $role = getRoleByUsername($_POST['username']); // Ganti dengan fungsi yang sesuai
         if ($role === 'admin') {
             header('location: index.php');
@@ -26,9 +32,10 @@ if (isset($_POST['login'])) {
             header('location: index_pemimpin.php');
         }
     } else {
-        echo "<script>alert('Login Gagal!');</script>";
+        echo '<script>alert("Login Gagal!");</script>';
     }
 }
+
 
 function getRoleByUsername($username) {
     // Contoh cara mendapatkan peran berdasarkan username dari database

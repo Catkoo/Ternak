@@ -7,16 +7,19 @@ if(isset($_POST['delete'])){
 }
 
 $orderBy = 'tanggal_keluar DESC'; // Default sorting (urutkan berdasarkan tanggal keluar)
+$filterNamaBarang = '';
 
 if (isset($_POST['filter'])) {
     // Ambil bulan awal dari form
     $filterStart = $_POST['start'];
     $orderBy = 'tanggal_keluar ASC'; // Ubah pengurutan menjadi urutkan berdasarkan tanggal keluar secara menaik
+    $filterNamaBarang = isset($_POST['nama_barang']) ? $_POST['nama_barang'] : '';
 }
 ?>
 
 <form method="post" class="form-report" style="">
     <input type="month" class="form-control" name="start" required>
+    <input type="text" class="form-control" name="nama_barang" placeholder="Nama Barang">
     <button class="btn btn-primary btn-sm" name="filter" type="submit">Filter</button>
     <!-- Tombol Cetak Laporan Filtered dihapus -->
     <!-- <button id="cetakPDFFiltered" class="btn btn-primary btn-sm">Cetak Laporan Filtered (PDF)</button> -->
@@ -39,14 +42,14 @@ if (isset($_POST['filter'])) {
                 <tbody>
                     <?php
                     $no = 1;
-                    $filterCondition = "";
-                    if (isset($filterStart) && !empty($filterStart)) {
-                        $filterCondition = "AND DATE_FORMAT(tanggal_keluar, '%Y-%m') = '$filterStart'";
-                    }
-
+                   $filterCondition = "";
+                if (!empty($filterStart)) {
+                $filterCondition .= " AND DATE_FORMAT(tanggal_keluar, '%Y-%m') = '$filterStart'";
+                }
+                if (!empty($filterNamaBarang)) {
+                 $filterCondition .= " AND b.nama_barang LIKE '%$filterNamaBarang%'";
+                }
                     $sql = $koneksi->query("SELECT * FROM barang_keluar as bk JOIN barang as b ON bk.barang_id=b.id_barang LEFT JOIN satuan as st ON st.id_satuan=b.satuan_id JOIN history as h ON h.bmk_id=bk.id_bk WHERE role='BK' $filterCondition group by id_bk ORDER BY tanggal_keluar DESC");
-                    $dataLaporanFiltered = array();
-
                     while($data = $sql->fetch_assoc()) {
                     ?>
                         <tr>
@@ -126,7 +129,7 @@ if (isset($_POST['filter'])) {
                             alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
                         },
                         {
-                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\nPimpinan`,
+                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\n(                                   ) `,
                             alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
                             margin: [0, 0, 40, 0] // Atur margin kanan
                         }

@@ -37,25 +37,25 @@ if(isset($_POST['delete'])){
                     </tr>
                 </thead>
                 <?php
-                $no =1;
-                $sql = $koneksi->query("SELECT * FROM supplier");
-                while($data = $sql->fetch_assoc()){?>
-                    <tbody>
-                        <tr>
-                            <td><?= $no;?></td>
-                            <td><?= $data['nama_sup'];?></td>
-                            <td><?= $data['telepon_sup'];?></td>
-                            <td><?= $data['alamat_sup'];?></td>
-                            <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id_sup'];?>"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <form method="post" class="d-inline">
-                                    <input type="hidden" value="<?= $data['id_sup'];?>" name="id">
-                                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
+$no = 1;
+$sql = $koneksi->query("SELECT * FROM supplier ORDER BY latest_update DESC");
+while ($data = $sql->fetch_assoc()) { ?>
+    <tbody>
+        <tr>
+            <td><?= $no; ?></td>
+            <td><?= $data['nama_sup']; ?></td>
+            <td><?= $data['telepon_sup']; ?></td>
+            <td><?= $data['alamat_sup']; ?></td>
+            <td><?= date('d/m/Y H:i', strtotime($data['latest_update'])); ?></td>
+            <td>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id_sup']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
+                <form method="post" class="d-inline">
+                    <input type="hidden" value="<?= $data['id_sup']; ?>" name="id">
+                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
 
                     <!-- Modal Edit Supplier-->
                     <div class="modal fade" id="update<?= $data['id_sup'];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

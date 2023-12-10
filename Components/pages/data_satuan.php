@@ -35,23 +35,23 @@ if(isset($_POST['delete'])){
                     </tr>
                 </thead>
                 <?php
-                $no =1;
-                $sql = $koneksi->query("SELECT * FROM satuan");
-                while($data = $sql->fetch_assoc()){?>
-                    <tbody>
-                        <tr>
-                            <td><?= $no;?></td>
-                            <td><?= $data['nama_satuan'];?></td>
-                            <td><?= date('d/m/Y H:i', strtotime($data['update_at']));?></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id_satuan'];?>"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <form method="post" class="d-inline">
-                                    <input type="hidden" value="<?= $data['id_satuan'];?>" name="id">
-                                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
+$no = 1;
+$sql = $koneksi->query("SELECT * FROM satuan ORDER BY update_at DESC");
+while ($data = $sql->fetch_assoc()) { ?>
+    <tbody>
+        <tr>
+            <td><?= $no; ?></td>
+            <td><?= $data['nama_satuan']; ?></td>
+            <td><?= date('d/m/Y H:i', strtotime($data['update_at'])); ?></td>
+            <td>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id_satuan']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
+                <form method="post" class="d-inline">
+                    <input type="hidden" value="<?= $data['id_satuan']; ?>" name="id">
+                    <button class="btn btn-danger btn-sm" name="delete"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
 
                     <!-- MODAL EDIT SATUAN-->
                     <div class="modal fade" id="update<?= $data['id_satuan'];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

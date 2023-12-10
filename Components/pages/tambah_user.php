@@ -96,30 +96,30 @@ if (isset($_POST['deleteUser'])) {
                         <th>No</th>
                         <th>Nama</th>
                         <th>Username</th>
-                        <th>Password</th>
+                        <!-- <th>Password</th> -->
                         <th>Role</th> <!-- Tambahkan kolom Role -->
                         <th>Latest Update</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <?php
-                $no = 1;
-                $sql = $koneksi->query("SELECT * FROM users");
-                while ($data = $sql->fetch_assoc()) { ?>
-                    <tbody>
-                        <tr>
-                            <td><?= $no; ?></td>
-                            <td><?= $data['nama']; ?></td>
-                            <td><?= $data['username']; ?></td>
-                            <td>Password Telah Dienkripsi</td>
-                            <td><?= $data['role']; ?></td> <!-- Menampilkan peran (role) -->
-                            <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <form method="post" class="d-inline">
-                                    <input type="hidden" value="<?= $data['id']; ?>" name="id">
-                                    <button class="btn btn-danger btn-sm" name="deleteUser"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+$no = 1;
+$sql = $koneksi->query("SELECT * FROM users ORDER BY latest_update DESC");
+while ($data = $sql->fetch_assoc()) { ?>
+    <tbody>
+        <tr>
+            <td><?= $no; ?></td>
+            <td><?= $data['nama']; ?></td>
+            <td><?= $data['username']; ?></td>
+            <!-- <td>Password Telah Dienkripsi</td> -->
+            <td><?= $data['role']; ?></td> <!-- Menampilkan peran (role) -->
+            <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
+            <td>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
+                <form method="post" class="d-inline">
+                    <input type="hidden" value="<?= $data['id']; ?>" name="id">
+                    <button class="btn btn-danger btn-sm" name="deleteUser"><i class="fa-solid fa-trash"></i></button>
+                </form>
                             </td>
                         </tr>
                     </tbody>

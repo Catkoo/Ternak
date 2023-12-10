@@ -132,7 +132,7 @@ if (isset($_POST['filter'])) {
                             alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
                         },
                         {
-                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\nPimpinan `,
+                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\n(                                   ) `,
                             alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
                             margin: [0, 0, 40, 0] // Atur margin kanan
                         }
