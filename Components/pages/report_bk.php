@@ -83,95 +83,114 @@ if (isset($_POST['filter'])) {
     document.body.appendChild(script);
 
     // Fungsi untuk membuat laporan PDF
-    function generatePDF(data, title) {
-        var currentDate = new Date().toLocaleDateString('id-ID');
+function generatePDF(data, title) {
+    var currentDate = new Date().toLocaleDateString('id-ID');
 
-        var docDefinition = {
-            content: [
-                {
-                    text: title,
-                    style: 'header'
-                },
-                {
-                    text: 'Ternak Ayam Pak Asun',
-                    style: 'subheader'
-                },
-                {
-                    canvas: [
-                        {
-                            type: 'line',
-                            x1: 0,
-                            y1: 0,
-                            x2: 513, // Sesuaikan lebar halaman
-                            y2: 0,
-                            lineWidth: 3,
-                            lineColor: 'black'
-                        }
-                    ]
-                },
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: [30, '*', 40, 70, '*'],
-                        body: [
-                            [{ text: 'No', style: 'tableHeader' }, { text: 'Nama Barang', style: 'tableHeader' }, { text: 'Jumlah', style: 'tableHeader' }, { text: 'Bulan Keluar', style: 'tableHeader' }, { text: 'Tujuan', style: 'tableHeader' }],
-                            // Data laporan akan dimasukkan di sini
-                        ]
+    var docDefinition = {
+        content: [
+            {
+                text: 'Ternak Ayam Pak Asun',
+                style: 'header'
+            },
+            {
+                text: 'Km.19 Gesek Toapaya Asri, Jl. Nuri No.19, Toapaya Sel., Kec. Toapaya\nNo HP: 081364711234',
+                style: 'subheader'
+            },
+            {
+                canvas: [
+                    {
+                        type: 'line',
+                        x1: 0,
+                        y1: 0,
+                        x2: 513, // Sesuaikan lebar halaman
+                        y2: 0,
+                        lineWidth: 3,
+                        lineColor: 'black'
                     }
-                },
-                {
-                    text: '\n\n\n\n', // Berikan spasi
-                },
-                {
-                    columns: [
-                        {
-                            text: '',
-                            alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
-                        },
-                        {
-                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\n(                                   ) `,
-                            alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
-                            margin: [0, 0, 40, 0] // Atur margin kanan
-                        }
+                ]
+            },
+            {
+                text: '\n\nLampiran : Laporan Barang Keluar', // Perubahan disini
+                style: 'lampiran'
+            },
+            {
+                text: `Tanggal    : ${currentDate}\n\n`, // Penambahan teks baru
+                style: 'tanggal'
+            },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: [30, '*', 40, 70, '*'],
+                    body: [
+                        [{ text: 'No', style: 'tableHeader' }, { text: 'Nama Barang', style: 'tableHeader' }, { text: 'Jumlah', style: 'tableHeader' }, { text: 'Bulan Keluar', style: 'tableHeader' }, { text: 'Tujuan', style: 'tableHeader' }],
+                        // Data laporan akan dimasukkan di sini
                     ]
-                }
-            ],
-            styles: {
-                header: {
-                    fontSize: 18,
-                    bold: true,
-                    alignment: 'center',
-                    margin: [0, 0, 0, 20] // Atur margin bawah
-                },
-                subheader: {
-                    fontSize: 12,
-                    bold: true,
-                    alignment: 'center',
-                    margin: [0, 0, 0, 15] // Atur margin bawah
-                },
-                tableHeader: {
-                    fontSize: 12,
-                    bold: true,
-                    fillColor: '#CCCCCC', // Warna latar belakang
                 }
             },
-        };
+            {
+                text: '\n\n\n\n', // Berikan spasi
+            },
+            {
+                columns: [
+                    {
+                        text: '',
+                        alignment: 'left',
+                    },
+                    {
+                        text: `Toapaya Selatan, ${currentDate}\nMengetahui,\n\n\n\n\n\n\n\n(     Herman Kurniawan     ) `,
+                        alignment: 'right',
+                        margin: [0, 0, 40, 0]
+                    }
+                ]
+            }
+        ],
+        styles: {
+            header: {
+                fontSize: 18,
+                bold: true,
+                alignment: 'center',
+                margin: [0, 0, 0, 20]
+            },
+            subheader: {
+                fontSize: 12,
+                bold: true,
+                alignment: 'center',
+                margin: [0, 0, 0, 8]
+            },
+            tableHeader: {
+                fontSize: 12,
+                bold: true,
+                fillColor: '#CCCCCC',
+            },
+            lampiran: { // Gaya untuk lampiran
+                fontSize: 12,
+                italic: true,
+                alignment: 'left',
+                margin: [0, 0, 0, 5] // Atur margin bawah
+            },
+            tanggal: { // Gaya untuk tanggal
+                fontSize: 12,
+                italic: true,
+                alignment: 'left',
+                margin: [0, 0, 0, 10] // Atur margin bawah
+            }
+        },
+    };
 
-        // Memasukkan data dari parameter ke dalam dokumen PDF
-        data.forEach(function (row) {
-            docDefinition.content[3].table.body.push([
-                row.no,
-                row.nama_barang,
-                row.jumlah_keluar,
-                row.bulan_keluar,
-                row.tujuan
-            ]);
-        });
+    // Memasukkan data dari parameter ke dalam dokumen PDF
+    data.forEach(function (row) {
+        docDefinition.content[5].table.body.push([ // Indeks 5 digunakan karena ada dua elemen teks baru sebelumnya
+            row.no,
+            row.nama_barang,
+            row.jumlah_keluar,
+            row.bulan_keluar,
+            row.tujuan
+        ]);
+    });
 
-        // Buat dan unduh dokumen PDF
-        pdfMake.createPdf(docDefinition).download(title + '.pdf');
-    }
-
+    // Buat dan unduh dokumen PDF
+    pdfMake.createPdf(docDefinition).download(title + '.pdf');
+}
     // Cetak Laporan Semua (PDF)
     document.getElementById("cetakPDFAll").addEventListener("click", function () {
         // Ambil data laporan semua dari tabel

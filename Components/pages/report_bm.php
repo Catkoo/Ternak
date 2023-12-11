@@ -87,8 +87,7 @@ if (isset($_POST['filter'])) {
     </div>
 </div>
 
-
-      <script>
+<script>
     // Fungsi untuk membuat laporan PDF
     function generatePDF(data) {
         var currentDate = new Date().toLocaleDateString('id-ID');
@@ -96,11 +95,11 @@ if (isset($_POST['filter'])) {
         var docDefinition = {
             content: [
                 {
-                    text: 'Laporan Barang Masuk',
+                    text: 'Ternak Ayam Pak Asun',
                     style: 'header'
                 },
                 {
-                    text: 'Ternak Ayam Pak Asun',
+                    text: 'Km.19 Gesek Toapaya Asri, Jl. Nuri No.19, Toapaya Sel., Kec. Toapaya\nNo HP: 081364711234',
                     style: 'subheader'
                 },
                 {
@@ -115,6 +114,14 @@ if (isset($_POST['filter'])) {
                             lineColor: 'black'
                         }
                     ]
+                },
+                {
+                    text: 'Lampiran : Laporan Barang Masuk',
+                    style: 'attachment'
+                },
+                {
+                    text: `Tanggal    : ${currentDate}\n\n`, // Added automatic date
+                    style: 'date'
                 },
                 {
                     table: {
@@ -136,7 +143,7 @@ if (isset($_POST['filter'])) {
                             alignment: 'left', // Spasi kosong untuk menjaga posisi "Mengetahui" di sebelah kiri
                         },
                         {
-                            text: `Toapaya, ${currentDate}\nMengetahui\n\n\n\n\n\n(                                   ) `,
+                            text: `Toapaya Selatan, ${currentDate}\nMengetahui,\n\n\n\n\n\n\n\n(     Herman Kurniawan     ) `,
                             alignment: 'right', // Mengubah posisi "Mengetahui" dan "Garis Pendek Pimpinan" ke kanan
                             margin: [0, 0, 40, 0] // Atur margin kanan
                         }
@@ -160,13 +167,24 @@ if (isset($_POST['filter'])) {
                     fontSize: 12,
                     bold: true,
                     fillColor: '#CCCCCC', // Warna latar belakang
+                },
+                attachment: {
+                    fontSize: 12,
+                    italic: true,
+                    alignment: 'left',
+                    margin: [0, 20, 0, 10] // Atur margin atas
+                },
+                date: {
+                    fontSize: 12,
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0] // Atur margin atas
                 }
             }
         };
 
         // Memasukkan data dari parameter ke dalam dokumen PDF
         data.forEach(function (row) {
-            docDefinition.content[3].table.body.push([
+            docDefinition.content[5].table.body.push([
                 row.no,
                 row.nama_barang,
                 row.nama_sup,
@@ -200,6 +218,8 @@ if (isset($_POST['filter'])) {
         generatePDF(dataLaporanAll);
     });
 </script>
+
         </div>
     </div>
 </div>
+
