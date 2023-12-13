@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 10 Des 2023 pada 04.50
+-- Waktu pembuatan: 13 Des 2023 pada 17.20
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -43,9 +43,8 @@ CREATE TABLE `barang` (
 --
 
 INSERT INTO `barang` (`id_barang`, `nama_barang`, `satuan_id`, `stok`, `foto_barang`, `create_by`, `created_at`, `update_at`) VALUES
-('BRG-0001', 'Ayam Kampung', 'STN-0001', 180, '653e1ef50f666.jpg', 0, '2023-10-29 15:59:33', '2023-10-29 15:59:33'),
-('BRG-0002', 'Ayam Boiler', 'STN-0001', 128, '653e2503bc1c4.jpg', 0, '2023-10-29 16:25:23', '2023-10-29 16:25:23'),
-('BRG-0003', 'Ayam Petelur', 'STN-0001', 40, '653e2d13dfa89.jpg', 0, '2023-10-29 16:59:47', '2023-10-29 16:59:47');
+('BRG-0001', 'Ayam Kampung', 'STN-0001', 0, '6579d55be75fb.jpg', 0, '2023-12-13 23:01:31', '2023-12-13 23:01:46'),
+('BRG-0002', 'Ayam Petelur', 'STN-0001', 0, '6579d575541dd.jpg', 0, '2023-12-13 23:01:57', '2023-12-13 23:01:57');
 
 -- --------------------------------------------------------
 
@@ -62,25 +61,6 @@ CREATE TABLE `barang_keluar` (
   `create_by` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `barang_keluar`
---
-
-INSERT INTO `barang_keluar` (`id_bk`, `barang_id`, `tanggal_keluar`, `tujuan`, `jumlah_keluar`, `create_by`) VALUES
-('BK-0001', 'BRG-0001', '2023-10-29 16:49:28', 'terserah', 60, 0),
-('BK-0002', 'BRG-0001', '2023-10-29 16:49:50', 'orng beli', 10, 0),
-('BK-0003', 'BRG-0003', '2023-10-29 17:01:04', 'ya', 40, 0),
-('BK-0004', 'BRG-0003', '2023-10-29 17:01:17', 'tg', 10, 0),
-('BK-0005', 'BRG-0003', '2023-11-13 08:38:35', 'abc', 10, 0),
-('BK-0006', 'BRG-0003', '2023-11-13 08:54:34', 'abc', 10, 0),
-('BK-0007', 'BRG-0002', '2023-11-17 13:05:59', 'mati', 5, 0),
-('BK-0008', 'BRG-0001', '2023-11-27 08:49:49', 'abc', 40, 0),
-('BK-0009', 'BRG-0001', '2023-12-03 14:07:50', 'mati', 2, 0),
-('BK-0010', 'BRG-0001', '2023-12-03 14:41:58', 'mati', 1, 0),
-('BK-0011', 'BRG-0002', '2023-12-09 21:42:58', 'mati', 8, 0),
-('BK-0012', 'BRG-0003', '2023-12-09 22:46:31', 'mati', 2, 0),
-('BK-0013', 'BRG-0003', '2023-12-10 10:50:02', 'abc', 10, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -96,29 +76,6 @@ CREATE TABLE `barang_masuk` (
   `create_by` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `barang_masuk`
---
-
-INSERT INTO `barang_masuk` (`id_bm`, `barang_id`, `supplier_id`, `jumlah_masuk`, `tanggal_masuk`, `create_by`) VALUES
-('BM-0001', 'BRG-0001', 'SUP-0002', 100, '2023-10-29 16:46:37', 0),
-('BM-0002', 'BRG-0002', 'SUP-0003', 100, '2023-10-29 16:46:49', 0),
-('BM-0003', 'BRG-0001', 'SUP-0003', 100, '2023-10-29 16:57:21', 0),
-('BM-0004', 'BRG-0003', 'SUP-0001', 100, '2023-10-29 17:00:16', 0),
-('BM-0005', 'BRG-0003', 'SUP-0002', 10, '2023-11-13 08:38:04', 0),
-('BM-0006', 'BRG-0003', 'SUP-0002', 12, '2023-11-13 08:53:19', 0),
-('BM-0007', 'BRG-0001', 'SUP-0003', 10, '2023-11-13 08:59:58', 0),
-('BM-0008', 'BRG-0002', 'SUP-0002', 19, '2023-11-17 12:37:35', 0),
-('BM-0009', 'BRG-0001', 'SUP-0001', 40, '2023-11-27 08:49:08', 0),
-('BM-0010', 'BRG-0001', 'SUP-0003', 10, '2023-11-30 12:31:44', 0),
-('BM-0011', 'BRG-0002', 'SUP-0002', 10, '2023-11-30 12:33:17', 0),
-('BM-0012', 'BRG-0002', 'SUP-0003', 4, '2023-12-03 13:29:45', 0),
-('BM-0013', 'BRG-0001', 'SUP-0001', 12, '2023-12-03 14:27:54', 0),
-('BM-0014', 'BRG-0001', 'SUP-0001', 1, '2023-12-03 14:41:43', 0),
-('BM-0015', 'BRG-0001', 'SUP-0002', 10, '2023-12-09 21:42:45', 0),
-('BM-0016', 'BRG-0002', 'SUP-0001', 8, '2023-12-09 22:46:11', 0),
-('BM-0017', 'BRG-0001', 'SUP-0001', 10, '2023-12-10 10:49:29', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -133,18 +90,6 @@ CREATE TABLE `history` (
   `jumlah` int(11) DEFAULT 0,
   `tgl` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `history`
---
-
-INSERT INTO `history` (`id`, `barang_id`, `bmk_id`, `role`, `jumlah`, `tgl`) VALUES
-(70, 'BRG-0001', 0, 'BM', 10, '2023-12-09 21:42:45'),
-(71, 'BRG-0002', 0, 'BK', 8, '2023-12-09 21:42:58'),
-(72, 'BRG-0002', 0, 'BM', 8, '2023-12-09 22:46:11'),
-(73, 'BRG-0003', 0, 'BK', 2, '2023-12-09 22:46:31'),
-(74, 'BRG-0001', 0, 'BM', 10, '2023-12-10 10:49:29'),
-(75, 'BRG-0003', 0, 'BK', 10, '2023-12-10 10:50:02');
 
 -- --------------------------------------------------------
 
@@ -268,7 +213,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `history`
 --
 ALTER TABLE `history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
