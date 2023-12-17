@@ -7,11 +7,10 @@ include "config/koneksi.php";
 include "config/newID.php";
 include "config/function.php";
 
-if(!$_SESSION['login']){
-    echo"<script>alert('Silahkan Login!');</script>";
-    header("location:login.php");
+if (!isset($_SESSION['login'])) {
+    echo "<script>alert('Silahkan Login!');</script>";
+    header("location: login.php");
 }
-
 include "Components/templatesp/header.php";
 ?>
 <div class="content-body">

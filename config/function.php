@@ -45,7 +45,7 @@ function registerFunc($data){
 }
 
 // LOGIN FUNCTION
-function loginFunc($data){
+function loginFunc($data) {
     global $koneksi;
 
     $username = $data['username'];
@@ -56,7 +56,7 @@ function loginFunc($data){
     $stmt->execute();
     $stmt->store_result();
 
-    if($stmt->num_rows > 0){
+    if ($stmt->num_rows > 0) {
         $stmt->bind_result($id, $username, $password, $role);
         $stmt->fetch();
 
@@ -66,12 +66,12 @@ function loginFunc($data){
             'role' => $role
         ];
 
-        if ($role == 'admin') {
+         if ($role == 'admin') {
             header('location: index.php'); // Ganti dengan halaman admin
         } elseif ($role == 'pimpinan') {
             header('location: index_pemimpin.php'); // Ganti dengan halaman pimpinan
         } else {
-            header('location: user_dashboard.php'); // Ganti dengan halaman pengguna biasa
+            header('location: login.php'); // Ganti dengan halaman default jika role bukan admin atau pimpinan
         }
     } else {
         echo "
@@ -83,6 +83,7 @@ function loginFunc($data){
 
     return mysqli_affected_rows($koneksi);
 }
+
 
 
 
