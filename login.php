@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 include "config/koneksi.php";
 include "config/function.php";
@@ -57,13 +58,9 @@ function getRoleByUsername($username) {
     <link rel="stylesheet" href="assets/plugins/bootstrap-5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/plugins/fontawesome-free-6.1.1/css/fontawesome.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <title>LOGIN</title>
+    <title>Ternak Gesek</title>
 </head>
 <body>
-    <!-- <video autoplay muted loop class="bg-video">
-        <source src="assets/video/backgroundvid.mp4" type="video/mp4">
-    </video> -->
-
     <div class="login">
         <div class="card login-card">
             <div class="card-body">
@@ -81,12 +78,12 @@ function getRoleByUsername($username) {
                         <button class="btn btn-primary" type="submit" name="login">Login</button>
                     </div>
                 </form>
+                    <p class="text-center mt-2">
+                    <a href="forget_password.php">Forget Password?</a>
+                </p>
             </div>
         </div>
-
     </div>
-
-
 
     <script src="assets/plugins/Jquery/jquery-3.6.0-min.js"></script>
     <script src="assets/plugins/bootstrap-5.2/js/bootstrap.bundle.min.js"></script>

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2023 at 07:26 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Waktu pembuatan: 24 Des 2023 pada 07.28
+-- Versi server: 10.4.28-MariaDB
+-- Versi PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `barang`
+-- Struktur dari tabel `barang`
 --
 
 CREATE TABLE `barang` (
@@ -39,17 +39,17 @@ CREATE TABLE `barang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `barang`
+-- Dumping data untuk tabel `barang`
 --
 
 INSERT INTO `barang` (`id_barang`, `nama_barang`, `satuan_id`, `stok`, `foto_barang`, `create_by`, `created_at`, `update_at`) VALUES
-('BRG-0001', 'Ayam Kampung', 'STN-0001', 0, '6579d55be75fb.jpg', 0, '2023-12-13 23:01:31', '2023-12-13 23:01:46'),
-('BRG-0002', 'Ayam Petelur', 'STN-0001', 0, '6579d575541dd.jpg', 0, '2023-12-13 23:01:57', '2023-12-14 00:15:18');
+('BRG-0001', 'Ayam Kampung', 'STN-0001', 0, '6584fce984473.jpg', 0, '2023-12-22 10:05:13', '2023-12-22 10:05:13'),
+('BRG-0002', 'Ayam Petelur', 'STN-0001', 0, '6584fcf55b102.jpg', 0, '2023-12-22 10:05:25', '2023-12-22 10:05:25');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `barang_keluar`
+-- Struktur dari tabel `barang_keluar`
 --
 
 CREATE TABLE `barang_keluar` (
@@ -64,7 +64,7 @@ CREATE TABLE `barang_keluar` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `barang_masuk`
+-- Struktur dari tabel `barang_masuk`
 --
 
 CREATE TABLE `barang_masuk` (
@@ -79,7 +79,7 @@ CREATE TABLE `barang_masuk` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `history`
+-- Struktur dari tabel `history`
 --
 
 CREATE TABLE `history` (
@@ -94,7 +94,7 @@ CREATE TABLE `history` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `satuan`
+-- Struktur dari tabel `satuan`
 --
 
 CREATE TABLE `satuan` (
@@ -104,7 +104,7 @@ CREATE TABLE `satuan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `satuan`
+-- Dumping data untuk tabel `satuan`
 --
 
 INSERT INTO `satuan` (`id_satuan`, `nama_satuan`, `update_at`) VALUES
@@ -113,7 +113,7 @@ INSERT INTO `satuan` (`id_satuan`, `nama_satuan`, `update_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `supplier`
+-- Struktur dari tabel `supplier`
 --
 
 CREATE TABLE `supplier` (
@@ -125,7 +125,7 @@ CREATE TABLE `supplier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `supplier`
+-- Dumping data untuk tabel `supplier`
 --
 
 INSERT INTO `supplier` (`id_sup`, `nama_sup`, `telepon_sup`, `alamat_sup`, `latest_update`) VALUES
@@ -136,7 +136,7 @@ INSERT INTO `supplier` (`id_sup`, `nama_sup`, `telepon_sup`, `alamat_sup`, `late
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
@@ -145,81 +145,83 @@ CREATE TABLE `users` (
   `username` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` varchar(30) DEFAULT NULL,
-  `latest_update` datetime DEFAULT NULL
+  `email` varchar(255) DEFAULT NULL,
+  `latest_update` datetime DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `token_expiration` datetime DEFAULT NULL,
+  `reset_request_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `latest_update`) VALUES
-(20, 'Pimpinan', 'pimpinan', '202cb962ac59075b964b07152d234b70', 'pimpinan', '2023-10-29 16:03:51'),
-(21, 'admin', 'admin', '202cb962ac59075b964b07152d234b70', 'admin', '2023-10-29 16:04:06'),
-(22, 'Richard Khoo', 'catkoo', '202cb962ac59075b964b07152d234b70', 'pimpinan', '2023-11-13 09:06:35'),
-(23, 'Damejrr', 'jrr', '202cb962ac59075b964b07152d234b70', 'admin', '2023-11-13 09:06:49'),
-(25, 'ayam', 'ayam', '202cb962ac59075b964b07152d234b70', 'admin', '2023-12-14 00:11:27');
+INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `email`, `latest_update`, `reset_token`, `token_expiration`, `reset_request_time`) VALUES
+(22, 'Richard Khoo', 'catkoo', 'd41d8cd98f00b204e9800998ecf8427e', 'pimpinan', 'richard.khoo19@gmail.com', '2023-11-13 09:06:35', '5f883e1e82c90e908189d3911f43c2db71969ff2056e2d2579acf997ec7408fa', '2023-12-24 13:58:07', '2023-12-24 12:56:06'),
+(31, 'admin', 'admin', '25d55ad283aa400af464c76d713c07ad', 'admin', 'ringgo.hs12@gmail.com', '2023-12-23 21:10:08', '552d77cf4bb61bbe50b3438cc8ea6faa7b323fc3740b93515b5fe7363feb9d42', NULL, NULL),
+(32, 'Pimpinan', 'pimpinan', 'c8c605999f3d8352d7bb792cf3fdb25b', 'pimpinan', 'catkoo280@gmail.com', '2023-12-24 12:37:31', NULL, NULL, '2023-12-24 13:26:56');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `barang`
+-- Indeks untuk tabel `barang`
 --
 ALTER TABLE `barang`
   ADD PRIMARY KEY (`id_barang`);
 
 --
--- Indexes for table `barang_keluar`
+-- Indeks untuk tabel `barang_keluar`
 --
 ALTER TABLE `barang_keluar`
   ADD PRIMARY KEY (`id_bk`);
 
 --
--- Indexes for table `barang_masuk`
+-- Indeks untuk tabel `barang_masuk`
 --
 ALTER TABLE `barang_masuk`
   ADD PRIMARY KEY (`id_bm`);
 
 --
--- Indexes for table `history`
+-- Indeks untuk tabel `history`
 --
 ALTER TABLE `history`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `satuan`
+-- Indeks untuk tabel `satuan`
 --
 ALTER TABLE `satuan`
   ADD PRIMARY KEY (`id_satuan`);
 
 --
--- Indexes for table `supplier`
+-- Indeks untuk tabel `supplier`
 --
 ALTER TABLE `supplier`
   ADD PRIMARY KEY (`id_sup`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `history`
+-- AUTO_INCREMENT untuk tabel `history`
 --
 ALTER TABLE `history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -17,32 +17,32 @@ $resultSup = $sqlSup->num_rows;
 $koneksi->query("DELETE FROM history WHERE DATEDIFF(CURDATE(), tgl) > 1");
 
 // FUNGSI REGISTER
-function registerFunc($data){
-    global $koneksi;
+// function registerFunc($data){
+//     global $koneksi;
 
-    $name = $data['name'];
-    $username = $data['username'];
-    $pwd = md5($data['password']);
-    $rpwd = md5($data['rpassword']);
+//     $name = $data['name'];
+//     $username = $data['username'];
+//     $pwd = md5($data['password']);
+//     $rpwd = md5($data['rpassword']);
 
-    $qry = $koneksi->query("SELECT * FROM users");
-    $res = $qry->fetch_assoc();
+//     $qry = $koneksi->query("SELECT * FROM users");
+//     $res = $qry->fetch_assoc();
 
-    // MENGECEK APAKAH USERNAME SUDAH ADA DI DALAM DATABASE
-    // JIKA SUDAH ADA MAKA AKAN MENAMPILKAN ALERT ERROR
-    // MENGECEK APAKAH PASSWORD 1 DAN PASSWORD 2 MATCH
-    // JIKA TIDAK MATCH MAKA AKAN MENAMPILKAN PESAN ERROR
-    // JIKA KONDISI DIATAS TERPENUHI MAKA DATA AKAN DIKIRIM KE DALAM DATABASE.
-    if($username == $res['username']){
-        echo "<script>alert('Opps.. Username sudah digunakan');</script>";
-    }elseif($pwd != $rpwd){
-        echo "<script>alert('Password tidak sesuai!');</script>";
-    }else{
-        $koneksi->query("INSERT INTO users(id, nama, username, password, created_at)VALUE(NULL, '$name', '$username', '$pwd', NOW())");
-    }
+//     // MENGECEK APAKAH USERNAME SUDAH ADA DI DALAM DATABASE
+//     // JIKA SUDAH ADA MAKA AKAN MENAMPILKAN ALERT ERROR
+//     // MENGECEK APAKAH PASSWORD 1 DAN PASSWORD 2 MATCH
+//     // JIKA TIDAK MATCH MAKA AKAN MENAMPILKAN PESAN ERROR
+//     // JIKA KONDISI DIATAS TERPENUHI MAKA DATA AKAN DIKIRIM KE DALAM DATABASE.
+//     if($username == $res['username']){
+//         echo "<script>alert('Opps.. Username sudah digunakan');</script>";
+//     }elseif($pwd != $rpwd){
+//         echo "<script>alert('Password tidak sesuai!');</script>";
+//     }else{
+//         $koneksi->query("INSERT INTO users(id, nama, username, password, created_at)VALUE(NULL, '$name', '$username', '$pwd', NOW())");
+//     }
 
-    return mysqli_affected_rows($koneksi);
-}
+//     return mysqli_affected_rows($koneksi);
+// }
 
 // LOGIN FUNCTION
 function loginFunc($data) {
@@ -50,6 +50,11 @@ function loginFunc($data) {
 
     $username = $data['username'];
     $password = md5($data['password']);
+
+    if (strlen($data['password']) < 8) {
+        echo "<script>alert('Password harus minimal 8 karakter!');window.location.href='login.php';</script>";
+        return;
+    }
 
     $stmt = $koneksi->prepare("SELECT id, username, password, role FROM users WHERE username = ? AND password = ?");
     $stmt->bind_param("ss", $username, $password);
@@ -66,7 +71,7 @@ function loginFunc($data) {
             'role' => $role
         ];
 
-         if ($role == 'admin') {
+        if ($role == 'admin') {
             header('location: index.php'); // Ganti dengan halaman admin
         } elseif ($role == 'pimpinan') {
             header('location: index_pemimpin.php'); // Ganti dengan halaman pimpinan
@@ -74,15 +79,12 @@ function loginFunc($data) {
             header('location: login.php'); // Ganti dengan halaman default jika role bukan admin atau pimpinan
         }
     } else {
-        echo "
-        <script>
-            alert('Username Atau Password Salah');window.location.href='login.php';
-        </script>
-        ";
+        echo "<script>alert('Username Atau Password Salah');window.location.href='login.php';</script>";
     }
 
     return mysqli_affected_rows($koneksi);
 }
+
 
 
 
@@ -370,17 +372,27 @@ function deleteBarangKLR($data){
 }
 
 //User
-function addUser($nama, $username, $password, $rpassword, $role) {
+function addUser($nama, $username, $password, $rpassword, $role, $email) {
     global $koneksi;
 
     // Mengecek apakah username sudah ada di dalam database
-    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ?");
-    $query->bind_param("s", $username);
-    $query->execute();
-    $query->store_result();
+    $queryUsername = $koneksi->prepare("SELECT * FROM users WHERE username = ?");
+    $queryUsername->bind_param("s", $username);
+    $queryUsername->execute();
+    $queryUsername->store_result();
 
-    if ($query->num_rows > 0) {
+    // Mengecek apakah email sudah ada di dalam database
+    $queryEmail = $koneksi->prepare("SELECT * FROM users WHERE email = ?");
+    $queryEmail->bind_param("s", $email);
+    $queryEmail->execute();
+    $queryEmail->store_result();
+
+    if ($queryUsername->num_rows > 0) {
         return -1; // Username sudah digunakan
+    }
+
+    if ($queryEmail->num_rows > 0) {
+        return -4; // Email sudah digunakan
     }
 
     // Mengecek apakah password 1 dan password 2 match
@@ -389,27 +401,28 @@ function addUser($nama, $username, $password, $rpassword, $role) {
     }
 
     // Jika kondisi di atas terpenuhi, data akan dimasukkan ke dalam database
-    $query = $koneksi->prepare("INSERT INTO users (nama, username, password, role, latest_update) VALUES (?, ?, ?, ?, NOW())");
-    $query->bind_param("ssss", $nama, $username, $password, $role);
-    $query->execute();
+    $queryInsert = $koneksi->prepare("INSERT INTO users (nama, username, password, role, email, latest_update) VALUES (?, ?, ?, ?, ?, NOW())");
+    $queryInsert->bind_param("sssss", $nama, $username, $password, $role, $email);
+    $queryInsert->execute();
 
-    if ($query->affected_rows > 0) {
+    if ($queryInsert->affected_rows > 0) {
         return 1; // User berhasil ditambahkan
     } else {
         return -3; // Error saat menambahkan user
     }
 }
 
+
 function editUser($id, $nama, $username, $password, $rpassword) {
     global $koneksi;
 
     // Mengecek apakah username sudah ada di dalam database (kecuali pengguna saat ini)
-    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
-    $query->bind_param("si", $username, $id);
-    $query->execute();
-    $query->store_result();
+    $queryUsername = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
+    $queryUsername->bind_param("si", $username, $id);
+    $queryUsername->execute();
+    $queryUsername->store_result();
 
-    if ($query->num_rows > 0) {
+    if ($queryUsername->num_rows > 0) {
         return -1; // Username sudah digunakan
     }
 
@@ -421,22 +434,24 @@ function editUser($id, $nama, $username, $password, $rpassword) {
         }
 
         // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database termasuk password
-        $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ?, password = ? WHERE id = ?");
-        $query->bind_param("sssi", $nama, $username, $password, $id);
+        $queryUpdate = $koneksi->prepare("UPDATE users SET nama = ?, username = ?, password = ? WHERE id = ?");
+        $queryUpdate->bind_param("sssi", $nama, $username, $password, $id);
     } else {
-        // Jika password kosong, maka hanya update nama dan username
-        $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
-        $query->bind_param("ssi", $nama, $username, $id);
+        // Jika password kosong, hanya update nama dan username
+        $queryUpdate = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
+        $queryUpdate->bind_param("ssi", $nama, $username, $id);
     }
 
-    $query->execute();
+    $queryUpdate->execute();
 
-    if ($query->affected_rows > 0) {
+    if ($queryUpdate->affected_rows > 0) {
         return 1; // User berhasil diubah
     } else {
         return -3; // Error saat mengubah user
     }
 }
+
+
 
 function editUserWithoutPassword($id, $nama, $username) {
     global $koneksi;
@@ -479,5 +494,79 @@ function deleteUser($id) {
     } else {
         return -2; // Error saat menghapus user
     }
+}
+
+////reset
+function generateToken($userId) {
+    global $koneksi;
+
+    // Generate token
+    $token = bin2hex(random_bytes(32));
+
+    // Tentukan waktu kedaluwarsa (1 jam dari sekarang)
+    $expiration = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    // Simpan waktu reset_request_time (saat permintaan reset terakhir kali)
+    $resetRequestTime = null;
+
+    // Update database dengan token baru, waktu kedaluwarsa, dan waktu reset_request_time
+    $query = $koneksi->prepare("UPDATE users SET reset_token = ?, token_expiration = ?, reset_request_time = ? WHERE id = ?");
+    $query->bind_param("sssi", $token, $expiration, $resetRequestTime, $userId);
+    $query->execute();
+
+    return $token;
+}
+
+function validateToken($token) {
+    global $koneksi;
+
+    $currentDateTime = date('Y-m-d H:i:s');
+    $query = $koneksi->prepare("SELECT id FROM users WHERE reset_token = ? AND token_expiration > ? AND reset_request_time IS NULL");
+    $query->bind_param("ss", $token, $currentDateTime);
+    $query->execute();
+    $query->store_result();
+
+    return $query->num_rows > 0;
+}
+
+function resetPassword($token, $password) {
+    global $koneksi;
+
+    // Validasi token
+    if (validateToken($token)) {
+        $hashedPassword = md5($password);
+
+        // Dapatkan ID pengguna berdasarkan token
+        $query = $koneksi->prepare("SELECT id, reset_request_time FROM users WHERE reset_token = ?");
+        $query->bind_param("s", $token);
+        $query->execute();
+        $query->store_result();
+
+        if ($query->num_rows > 0) {
+            $query->bind_result($userId, $resetRequestTime);
+            $query->fetch();
+
+            // Periksa apakah token sudah digunakan sebelumnya
+            if ($resetRequestTime !== null) {
+                // Token sudah digunakan sebelumnya, tidak bisa digunakan lagi
+                return false;
+            }
+
+            // Reset password, hapus token, dan tandai token sebagai digunakan
+            $updatePasswordQuery = $koneksi->prepare("UPDATE users SET password = ?, reset_token = NULL, token_expiration = NULL, reset_request_time = NOW() WHERE id = ?");
+            $updatePasswordQuery->bind_param("si", $hashedPassword, $userId);
+            $updatePasswordQuery->execute();
+
+            return true;
+        } else {
+            // Log bahwa tidak ada pengguna dengan token yang diberikan ditemukan
+            // Anda dapat menambahkan pernyataan logging atau debugging lebih lanjut di sini
+        }
+    } else {
+        // Log bahwa validasi token gagal
+        // Anda dapat menambahkan pernyataan logging atau debugging lebih lanjut di sini
+    }
+
+    return false;
 }
 

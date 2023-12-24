@@ -6,33 +6,65 @@ if (isset($_POST['addUser'])) {
     $password = md5($_POST['password']);
     $rpassword = md5($_POST['rpassword']);
     $role = $_POST['role'];
+    $email = $_POST['email']; // Added email field
 
     // Memeriksa apakah ada kolom yang kosong
-    if (empty($nama) || empty($username) || empty($_POST['password']) || empty($_POST['rpassword'])) {
+    if (empty($nama) || empty($username) || empty($_POST['password']) || empty($_POST['rpassword']) || empty($email)) {
         echo "<script>alert('Data tidak boleh kosong!');</script>";
     } else {
         // Lanjutkan pemrosesan jika tidak ada kolom yang kosong
 
-        // Lakukan validasi lainnya seperti yang telah Anda lakukan sebelumnya
-        // ...
-
-        if ($password !== $rpassword) {
-            echo "<script>alert('Password tidak sesuai!');</script>";
+        // Validasi email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "<script>alert('Format email tidak valid!');</script>";
         } else {
-            $result = addUser($nama, $username, $password, $rpassword, $role);
-
-            if ($result === 1) {
-                echo "<script>alert('User berhasil ditambahkan!');</script>";
-            } else if ($result === -1) {
-                echo "<script>alert('Username sudah digunakan!');</script>";
-            } else if ($result === -2) {
-                echo "<script>alert('Error saat menambahkan user!');</script>";
+            // Validasi panjang password
+            if (strlen($_POST['password']) < 8) {
+                echo "<script>alert('Password minimal harus 8 karakter!');</script>";
             } else {
-                echo "<script>alert('Gagal menambahkan user!');</script>";
+                // Lakukan validasi lainnya seperti yang telah Anda lakukan sebelumnya
+                // ...
+
+                if ($password !== $rpassword) {
+                    echo "<script>alert('Password tidak sesuai!');</script>";
+                } else {
+                    // Check if email already exists
+                    $emailExists = checkEmailExists($email);
+                    if ($emailExists) {
+                        echo "<script>alert('Email sudah digunakan. Silakan gunakan email yang lain!');</script>";
+                    } else {
+                        $result = addUser($nama, $username, $password, $rpassword, $role, $email);
+
+                        if ($result === 1) {
+                            echo "<script>alert('User berhasil ditambahkan!');</script>";
+                        } else if ($result === -1) {
+                            echo "<script>alert('Username sudah digunakan!');</script>";
+                        } else if ($result === -2) {
+                            echo "<script>alert('Error saat menambahkan user!');</script>";
+                        } else {
+                            echo "<script>alert('Gagal menambahkan user!');</script>";
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+
+// Function to check if email already exists
+function checkEmailExists($email) {
+    global $koneksi;
+
+    // Query to check if the email already exists
+    $query = $koneksi->prepare("SELECT * FROM users WHERE email = ?");
+    $query->bind_param("s", $email);
+    $query->execute();
+    $query->store_result();
+
+    return $query->num_rows > 0; // Return true if email exists, false otherwise
+}
+
 
 
 // Fungsi untuk mengedit pengguna
@@ -49,19 +81,26 @@ if (isset($_POST['editUser'])) {
         // Validasi apakah kata sandi dan konfirmasi ulang kata sandi cocok
         if ($password !== $rpassword) {
             echo "<script>alert('Password tidak sesuai!');</script>";
+        } else if (strlen($_POST['password']) < 8) {
+            echo "<script>alert('Password harus minimal 8 karakter!');</script>";
         } else {
             $result = editUser($id, $nama, $username, $password, $rpassword);
         }
     } else {
         // Pengguna tidak ingin mengubah kata sandi
-        $result = editUserWithoutPassword($id, $nama, $username);
+        // Disini kita melakukan pengecekan terhadap keseluruhan data yang diisi
+        if (!empty($nama) && !empty($username)) {
+            $result = editUserWithoutPassword($id, $nama, $username);
+        } else {
+            echo "<script>alert('Semua data harus diisi!');</script>";
+        }
     }
-    
-    if ($result === 1) {
+
+    if (isset($result) && $result === 1) {
         echo "<script>alert('Informasi pengguna berhasil diubah!');</script>";
-    } else if ($result === -1) {
+    } else if (isset($result) && $result === -1) {
         echo "<script>alert('Username sudah digunakan!');</script>";
-    } else if ($result === -2) {
+    } else if (isset($result) && $result === -2) {
         echo "<script>alert('Error saat mengubah pengguna!');</script>";
     }
 }
@@ -69,21 +108,36 @@ if (isset($_POST['editUser'])) {
 
 
 
-
-
-
 // Fungsi untuk menghapus pengguna
 if (isset($_POST['deleteUser'])) {
     $id = $_POST['id'];
+    $role = getRoleById($id);
 
-    $result = deleteUser($id);
-
-    if ($result === 1) {
-        echo "<script>alert('User berhasil dihapus!');</script>";
+    // Pengecekan role sebelum memanggil deleteUser
+    if ($role === 'pimpinan') {
+        echo "<script>alert('Akun pimpinan tidak dapat dihapus!');</script>";
     } else {
-        echo "<script>alert('Gagal menghapus user!');</script>";
+        $result = deleteUser($id);
+
+        if ($result === 1) {
+            echo "<script>alert('User berhasil dihapus!');</script>";
+        } else {
+            echo "<script>alert('Gagal menghapus user!');</script>";
+        }
     }
 }
+function getRoleById($id) {
+    global $koneksi;
+
+    $query = $koneksi->prepare("SELECT role FROM users WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $query->bind_result($role);
+    $query->fetch();
+
+    return $role;
+}
+
 ?>
 
 <button class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addUser">+ Tambah Data User</button>
@@ -98,6 +152,7 @@ if (isset($_POST['deleteUser'])) {
                         <th>Username</th>
                         <!-- <th>Password</th> -->
                         <th>Role</th> <!-- Tambahkan kolom Role -->
+                        <th>Email</th>
                         <th>Latest Update</th>
                         <th>Aksi</th>
                     </tr>
@@ -113,6 +168,7 @@ while ($data = $sql->fetch_assoc()) { ?>
             <td><?= $data['username']; ?></td>
             <!-- <td>Password Telah Dienkripsi</td> -->
             <td><?= $data['role']; ?></td> <!-- Menampilkan peran (role) -->
+            <td><?= $data['email']; ?></td>
             <td><?= date('d/m/Y H:i', strtotime($data['latest_update']));?></td>
             <td>
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update<?= $data['id']; ?>"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -185,6 +241,10 @@ while ($data = $sql->fetch_assoc()) { ?>
                         <input type="text" class="form-control" id="username" name="username">
                     </div>
                     <div class="mb-2">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="user@example.com">
+                    </div>
+                    <div class="mb-2">
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password">
                     </div>
@@ -196,7 +256,7 @@ while ($data = $sql->fetch_assoc()) { ?>
                         <label for="role">Role</label>
                         <select class="form-select" id="role" name="role">
                             <option value="admin">admin</option>
-                            <option value="pimpinan">pimpinan</option>
+                            <!-- <option value="pimpinan">pimpinan</option> -->
                             <!-- Tambahkan opsi untuk peran lainnya jika diperlukan -->
                         </select>
                     </div>
@@ -204,6 +264,11 @@ while ($data = $sql->fetch_assoc()) { ?>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" name="addUser">Submit</button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
             </form>
         </div>
     </div>

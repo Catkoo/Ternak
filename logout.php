@@ -1,9 +1,11 @@
 <?php
+ob_start();
 session_start();
-
 // Tambahkan pesan ke sesi sebelum menghancurkannya
 $_SESSION['logout_message'] = "Logout berhasil. Terima kasih!";
-
 session_destroy();
-header("location: login.php");
 ?>
+<script>
+alert("Logout Berhasil");
+window.location.href = "login.php";
+</script>
