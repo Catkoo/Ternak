@@ -1,12 +1,14 @@
 <?php
 include "config/koneksi.php";
 include "config/function.php";
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Ambil token dari URL
 $token = $_GET['token'];
 
 // Validasi token di sini (Anda perlu menambahkan kodingan validasi token)
-$isValidToken = validateToken($token); // You need to implement the validateToken function
+$isValidToken = validateToken($token); // Anda perlu mengimplementasikan fungsi validateToken
 
 if (isset($_POST['submit'])) {
     $password = $_POST['password'];
@@ -16,6 +18,10 @@ if (isset($_POST['submit'])) {
         $resetResult = resetPassword($token, $password);
 
         if ($resetResult) {
+            // Setelah pengguna sukses mengganti password, batalkan token lama dan minta token baru
+            cancelOldToken($userId);
+            $newToken = generateToken($userId);
+
             // Berikan pesan sukses kepada pengguna
             echo "<script>alert('Password has been successfully reset. You can now login with your new password.'); window.location.href = 'login.php';</script>";
         } else {
@@ -28,6 +34,7 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

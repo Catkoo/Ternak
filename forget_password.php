@@ -37,7 +37,7 @@ if (isset($_POST['submit'])) {
 
         // You can customize the email content as needed
         $subject = "Reset Password";
-        $message = "Hello $username,\n\nYou have requested to reset your password. Click the link below to reset your password:\n$resetLink\n\nIf you did not request this, please ignore this email.";
+        $message = "Hello $username,\n\n30 Minutes To Reset Or Invalid .\n\nYou have requested to reset your password. Click the link below to reset your password:\n$resetLink\n\nIf you did not request this, please ignore this email.";
 
         // Send the email
         $mail = new PHPMailer(true);
