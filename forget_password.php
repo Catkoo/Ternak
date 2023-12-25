@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php'; // Sesuaikan path ini berdasarkan lokasi autoload.php di composer
+require 'vendor/autoload.php';
 
 if (isset($_POST['submit'])) {
     $email = $_POST['email'];
@@ -28,27 +28,27 @@ if (isset($_POST['submit'])) {
         $token = bin2hex(random_bytes(32));
 
         // Store the new token in the database and set token expiration
-        $updateTokenQuery = $koneksi->prepare("UPDATE users SET reset_token = ?, token_expiration = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE id = ?");
+        $updateTokenQuery = $koneksi->prepare("UPDATE users SET reset_token = ?, token_expiration = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE id = ?");
         $updateTokenQuery->bind_param("si", $token, $userId);
         $updateTokenQuery->execute();
 
         // Send the reset link to the user's email
-        $resetLink = "http://localhost/ternak/reset_password.php?token=$token";
+        $resetLink = "http://localhost/Ternak/reset_password.php?token=$token";
 
         // You can customize the email content as needed
         $subject = "Reset Password";
-        $message = "Hello $username,\n\n30 Minutes To Reset Or Invalid .\n\nYou have requested to reset your password. Click the link below to reset your password:\n$resetLink\n\nIf you did not request this, please ignore this email.";
+        $message = "Hello $username,\n\nYou have requested to reset your password. Click the link below to reset your password:\n$resetLink\n\nThis password reset link will expire in 5 minute.\n\nIf you did not request this, please ignore this email.";
 
         // Send the email
         $mail = new PHPMailer(true);
         $mail->isSMTP();
         $mail->Host = 'mail.ternakgesek.my.id';
         $mail->SMTPAuth = true;
-        $mail->Username = 'admin@ternakgesek.my.id';
+        $mail->Username = 'noreply@ternakgesek.my.id';
         $mail->Password = 'ternakgesek19';
         $mail->Port = 587;
         $mail->SMTPSecure = 'tls';
-        $mail->setFrom('admin@ternakgesek.my.id', 'Ternak Gesek');
+        $mail->setFrom('noreply@ternakgesek.my.id', 'Ternak Gesek');
         $mail->addAddress($email, $username);
         $mail->Subject = $subject;
         $mail->Body = $message;
@@ -63,6 +63,7 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
 
 
 

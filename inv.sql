@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 24 Des 2023 pada 07.28
+-- Waktu pembuatan: 25 Des 2023 pada 08.30
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -157,9 +157,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `nama`, `username`, `password`, `role`, `email`, `latest_update`, `reset_token`, `token_expiration`, `reset_request_time`) VALUES
-(22, 'Richard Khoo', 'catkoo', 'd41d8cd98f00b204e9800998ecf8427e', 'pimpinan', 'richard.khoo19@gmail.com', '2023-11-13 09:06:35', '5f883e1e82c90e908189d3911f43c2db71969ff2056e2d2579acf997ec7408fa', '2023-12-24 13:58:07', '2023-12-24 12:56:06'),
 (31, 'admin', 'admin', '25d55ad283aa400af464c76d713c07ad', 'admin', 'ringgo.hs12@gmail.com', '2023-12-23 21:10:08', '552d77cf4bb61bbe50b3438cc8ea6faa7b323fc3740b93515b5fe7363feb9d42', NULL, NULL),
-(32, 'Pimpinan', 'pimpinan', 'c8c605999f3d8352d7bb792cf3fdb25b', 'pimpinan', 'catkoo280@gmail.com', '2023-12-24 12:37:31', NULL, NULL, '2023-12-24 13:26:56');
+(32, 'Pimpinan', 'pimpinan', '25f9e794323b453885f5181f1b624d0b', 'pimpinan', 'catkoo280@gmail.com', '2023-12-24 12:37:31', NULL, NULL, '2023-12-25 14:29:34'),
+(33, 'Richard Khoo', 'catkoo', '25f9e794323b453885f5181f1b624d0b', 'pimpinan', 'richard.khoo19@gmail.com', '2023-12-25 13:35:18', 'e6341244c07bf1d5d2ffe18ae06d653ebaf5a452a45b14b7c0d7755eee2e7cc9', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -205,7 +205,8 @@ ALTER TABLE `supplier`
 -- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_reset_token` (`reset_token`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -221,7 +222,7 @@ ALTER TABLE `history`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

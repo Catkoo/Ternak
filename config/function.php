@@ -500,11 +500,17 @@ function deleteUser($id) {
 function generateToken($userId) {
     global $koneksi;
 
-    // Generate token
+    // Batalkan token lama yang belum digunakan
+    $resetRequestTime = date('Y-m-d H:i:s');
+    $cancelQuery = $koneksi->prepare("UPDATE users SET reset_request_time = ? WHERE id = ? AND reset_request_time IS NULL");
+    $cancelQuery->bind_param("si", $resetRequestTime, $userId);
+    $cancelQuery->execute();
+
+    // Generate token baru
     $token = bin2hex(random_bytes(32));
 
     // Tentukan waktu kedaluwarsa (30 menit dari sekarang)
-    $expiration = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+    $expiration = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
     // Simpan waktu reset_request_time (saat permintaan reset terakhir kali)
     $resetRequestTime = null;
@@ -517,29 +523,17 @@ function generateToken($userId) {
     return $token;
 }
 
-function cancelOldToken($userId) {
-    global $koneksi;
-
-    // Batalkan token lama dengan mengatur waktu reset_request_time
-    $resetRequestTime = date('Y-m-d H:i:s');
-    $query = $koneksi->prepare("UPDATE users SET reset_request_time = ? WHERE id = ? AND reset_request_time IS NULL");
-    $query->bind_param("si", $resetRequestTime, $userId);
-    $query->execute();
-}
-
 function validateToken($token) {
     global $koneksi;
 
     $currentDateTime = date('Y-m-d H:i:s');
-    $query = $koneksi->prepare("SELECT id FROM users WHERE reset_token = ? AND token_expiration > ? AND (reset_request_time IS NULL OR reset_request_time < DATE_SUB(NOW(), INTERVAL 30 MINUTE))");
+    $query = $koneksi->prepare("SELECT id FROM users WHERE reset_token = ? AND token_expiration > ?");
     $query->bind_param("ss", $token, $currentDateTime);
     $query->execute();
     $query->store_result();
 
     return $query->num_rows > 0;
 }
-
-
 
 function resetPassword($token, $password) {
     global $koneksi;
@@ -554,38 +548,30 @@ function resetPassword($token, $password) {
         $query->execute();
         $query->store_result();
 
-        if ($query->num_rows > 0) {
-            $query->bind_result($userId, $resetRequestTime);
-            $query->fetch();
+if ($query->num_rows > 0) {
+    $query->bind_result($userId, $resetRequestTime);
+    $query->fetch();
 
-            // Periksa apakah token sudah digunakan sebelumnya
-            if ($resetRequestTime !== null) {
-                // Token sudah digunakan sebelumnya, tidak bisa digunakan lagi
-                return false;
-            }
+    // Reset password, hapus token, dan tandai token sebagai digunakan
+    $hashedPassword = md5($password);
+    $updatePasswordQuery = $koneksi->prepare("UPDATE users SET password = ?, reset_token = NULL, token_expiration = NULL, reset_request_time = NOW() WHERE id = ?");
+    $updatePasswordQuery->bind_param("si", $hashedPassword, $userId);
+    $updatePasswordQuery->execute();
 
-            // Reset password, hapus token, dan tandai token sebagai digunakan
-            $updatePasswordQuery = $koneksi->prepare("UPDATE users SET password = ?, reset_token = NULL, token_expiration = NULL, reset_request_time = NOW() WHERE id = ?");
-            $updatePasswordQuery->bind_param("si", $hashedPassword, $userId);
-            $updatePasswordQuery->execute();
+    // Tandai token sebagai digunakan
+    $markTokenUsedQuery = $koneksi->prepare("UPDATE users SET reset_request_time = NOW() WHERE reset_token = ?");
+    $markTokenUsedQuery->bind_param("s", $token);
+    $markTokenUsedQuery->execute();
 
-            // Tandai token sebagai digunakan
-            $markTokenUsedQuery = $koneksi->prepare("UPDATE users SET reset_request_time = NOW() WHERE reset_token = ?");
-            $markTokenUsedQuery->bind_param("s", $token);
-            $markTokenUsedQuery->execute();
-
-            return true;
-        } else {
-            // Log bahwa tidak ada pengguna dengan token yang diberikan ditemukan
-            // Anda dapat menambahkan pernyataan logging atau debugging lebih lanjut di sini
-            var_dump("Token tidak ditemukan pada resetPassword");
-        }
+    return true;
+} else {
+    // Log bahwa tidak ada pengguna dengan token yang diberikan ditemukan
+    error_log("Token tidak ditemukan pada resetPassword");
+}
     } else {
         // Log bahwa validasi token gagal
-        // Anda dapat menambahkan pernyataan logging atau debugging lebih lanjut di sini
-        var_dump("Validasi token gagal pada resetPassword");
+        error_log("Validasi token gagal pada resetPassword");
     }
 
     return false;
 }
-

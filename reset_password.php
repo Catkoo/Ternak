@@ -1,39 +1,31 @@
 <?php
 include "config/koneksi.php";
 include "config/function.php";
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-// Ambil token dari URL
 $token = $_GET['token'];
-
-// Validasi token di sini (Anda perlu menambahkan kodingan validasi token)
-$isValidToken = validateToken($token); // Anda perlu mengimplementasikan fungsi validateToken
+$isValidToken = validateToken($token);
 
 if (isset($_POST['submit'])) {
     $password = $_POST['password'];
 
     if ($isValidToken) {
-        // Token valid, reset the password
         $resetResult = resetPassword($token, $password);
 
         if ($resetResult) {
-            // Setelah pengguna sukses mengganti password, batalkan token lama dan minta token baru
-            cancelOldToken($userId);
-            $newToken = generateToken($userId);
+            // No need to cancel old token as it's already done in resetPassword
+            $newToken = generateToken($resetResult);
 
-            // Berikan pesan sukses kepada pengguna
             echo "<script>alert('Password has been successfully reset. You can now login with your new password.'); window.location.href = 'login.php';</script>";
         } else {
-            // Token valid, tetapi terjadi kesalahan saat mereset password
             echo "<script>alert('An error occurred while resetting the password. Please try again.');</script>";
         }
     } else {
-        // Token tidak valid, berikan pesan kesalahan
         echo "<script>alert('Invalid token. Please try again or request a new reset link.'); window.location.href = 'login.php';</script>";
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,4 +73,3 @@ if (isset($_POST['submit'])) {
     <script src="assets/plugins/fontawesome-free-6.1.1/js/all.min.js"></script>
 </body>
 </html>
-
