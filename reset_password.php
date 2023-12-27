@@ -7,25 +7,29 @@ $isValidToken = validateToken($token);
 
 if (isset($_POST['submit'])) {
     $password = $_POST['password'];
+    $confirmPassword = $_POST['confirm_password'];
 
     if ($isValidToken) {
-        $resetResult = resetPassword($token, $password);
+        // Pemeriksaan password dan konfirmasi password
+        if ($password == $confirmPassword) {
+            $resetResult = resetPassword($token, $password);
 
-        if ($resetResult) {
-            // No need to cancel old token as it's already done in resetPassword
-            $newToken = generateToken($resetResult);
+            if ($resetResult) {
+                // No need to cancel old token as it's already done in resetPassword
+                $newToken = generateToken($resetResult);
 
-            echo "<script>alert('Password has been successfully reset. You can now login with your new password.'); window.location.href = 'login.php';</script>";
+                echo "<script>alert('Password has been successfully reset. You can now login with your new password.'); window.location.href = 'login.php';</script>";
+            } else {
+                echo "<script>alert('An error occurred while resetting the password. Please try again.');</script>";
+            }
         } else {
-            echo "<script>alert('An error occurred while resetting the password. Please try again.');</script>";
+            echo "<script>alert('Password and Confirm Password do not match. Please make sure they are the same.');</script>";
         }
     } else {
         echo "<script>alert('Invalid token. Please try again or request a new reset link.'); window.location.href = 'login.php';</script>";
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,6 +56,10 @@ if (isset($_POST['submit'])) {
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-key"></i></span>
                             <input type="password" class="form-control" placeholder="New Password" aria-label="New Password" aria-describedby="basic-addon1" name="password" required minlength="8">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon2"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" class="form-control" placeholder="Confirm Password" aria-label="Confirm Password" aria-describedby="basic-addon2" name="confirm_password" required minlength="8">
                         </div>
                         <div class="d-grid gap-2">
                             <button class="btn btn-primary" type="submit" name="submit">Reset Password</button>
