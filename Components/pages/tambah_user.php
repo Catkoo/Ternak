@@ -65,19 +65,17 @@ function checkEmailExists($email) {
     return $query->num_rows > 0; // Return true if email exists, false otherwise
 }
 
-
-
 // Fungsi untuk mengedit pengguna
 if (isset($_POST['editUser'])) {
     $id = $_POST['id'];
     $nama = $_POST['nama'];
     $username = $_POST['username'];
-    
+
     // Cek apakah pengguna ingin mengubah kata sandi
     if (!empty($_POST['password'])) {
         $password = md5($_POST['password']);
         $rpassword = md5($_POST['rpassword']);
-        
+
         // Validasi apakah kata sandi dan konfirmasi ulang kata sandi cocok
         if ($password !== $rpassword) {
             echo "<script>alert('Password tidak sesuai!');</script>";
@@ -90,23 +88,30 @@ if (isset($_POST['editUser'])) {
         // Pengguna tidak ingin mengubah kata sandi
         // Disini kita melakukan pengecekan terhadap keseluruhan data yang diisi
         if (!empty($nama) && !empty($username)) {
+            // Hapus bagian yang berkaitan dengan edit role di sini
+
             $result = editUserWithoutPassword($id, $nama, $username);
         } else {
             echo "<script>alert('Semua data harus diisi!');</script>";
         }
     }
 
+    // Tambahkan notifikasi
     if (isset($result) && $result === 1) {
-        echo "<script>alert('Informasi pengguna berhasil diubah!');</script>";
+        echo "<script>alert('Informasi pengguna berhasil diubah');</script>";
     } else if (isset($result) && $result === -1) {
         echo "<script>alert('Username sudah digunakan!');</script>";
     } else if (isset($result) && $result === -2) {
-        echo "<script>alert('Error saat mengubah pengguna!');</script>";
+        echo "<script>alert('Tidak Ada Data Yang Diubah!');</script>";
+    } else if (isset($result) && $result === -3) {
+        echo "<script>alert('Informasi pengguna berhasil diubah, tetapi peran (role) tidak berhasil diubah.');</script>";
+        // You can customize the message above based on your specific requirements
+    } else if (isset($result) && $result === 2) {
+        echo "<script>alert('Tidak Ada Data Yang Diubah');</script>";
+    } else {
+        echo "<script>alert('Gagal mengubah informasi pengguna');</script>";
     }
 }
-
-
-
 
 // Fungsi untuk menghapus pengguna
 if (isset($_POST['deleteUser'])) {
@@ -181,40 +186,46 @@ while ($data = $sql->fetch_assoc()) { ?>
                     </tbody>
 
                     <!-- Modal Edit User-->
-                    <div class="modal fade" id="update<?= $data['id']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Update User</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form method="post">
-                                    <div class="modal-body">
-                                        <input type="hidden" name="id" value="<?= $data['id']; ?>">
-                                        <div class="mb-2">
-                                            <label for="nama">Nama</label>
-                                            <input type="text" class="form-control" id="nama" name="nama" value="<?= $data['nama']; ?>">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="username">Username</label>
-                                            <input type="text" class="form-control" id="username" name="username" value="<?= $data['username']; ?>">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="password">Password</label>
-                                            <input type="password" class="form-control" id="password" name="password">
-                                        </div>
-                                        <div class="mb-2">
-                                             <label for="rpassword">Konfirmasi Password</label>
-                                            <input type="password" class="form-control" id="rpassword" name="rpassword">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary" name="editUser">Submit</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+<!-- Modal Edit User-->
+<div class="modal fade" id="update<?= $data['id']; ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Update User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="<?= $data['id']; ?>">
+                    <div class="mb-2">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" value="<?= $data['email']; ?>" readonly>
                     </div>
+                    <div class="mb-2">
+                        <label for="nama">Nama</label>
+                        <input type="text" class="form-control" id="nama" name="nama" value="<?= $data['nama']; ?>">
+                    </div>
+                    <div class="mb-2">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="<?= $data['username']; ?>">
+                    </div>
+                    <div class="mb-2">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                    <div class="mb-2">
+                        <label for="rpassword">Konfirmasi Password</label>
+                        <input type="password" class="form-control" id="rpassword" name="rpassword">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="editUser">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
                 <?php $no++;
                 } ?>
             </table>

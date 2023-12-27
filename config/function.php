@@ -126,8 +126,20 @@ function tambahBarang($data){
 
     $id = $data['id'];
     $nama = $data['nama_barang'];
-    // $stok = $data['stok'];
     $satuan = $data['satuan'];
+
+    // Validasi jika nama barang kosong
+    if (empty($nama)) {
+        echo "<script>alert('Nama Barang tidak boleh kosong!');</script>";
+        return false; // Keluar dari fungsi jika nama barang kosong
+    }
+
+    // Validasi nama barang sudah ada atau belum
+    $result = $koneksi->query("SELECT * FROM barang WHERE nama_barang='$nama'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama Barang sudah ada!');</script>";
+        return false;
+    }
 
     $fileName = $_FILES['gambar']['name'];
     $tmp = $_FILES['gambar']['tmp_name'];
@@ -142,6 +154,7 @@ function tambahBarang($data){
     // MENGECEK APAKAH EXTENSI GAMBAR SESUAI DENGAN YANG DITENTUKAN
     if(!in_array($eks, $ekstensiVld)){
         echo "<script>alert('Ekstensi File Tidak Valid!');</script>";
+        return false;
     }
 
     // UPLOAD FILE KE DALAM FOLDER LOCAL 'ASSETS/IMG/'
@@ -150,7 +163,7 @@ function tambahBarang($data){
     $koneksi->query("INSERT INTO barang(id_barang, nama_barang, satuan_id, foto_barang, created_at, update_at)VALUES('$id', '$nama', '$satuan', '$newName', NOW(), NOW())");
     return mysqli_affected_rows($koneksi);
 }
-// FUNCTION EDIT BARANG
+
 function editBarang($data){
     global $koneksi;
 
@@ -169,6 +182,19 @@ function editBarang($data){
     $newName .= '.';
     $newName .= $eks;
     $ekstensiVld = ['png', 'jpg', 'jpeg'];
+
+    // Validasi jika nama barang kosong
+    if (empty($nama)) {
+        echo "<script>alert('Nama Barang tidak boleh kosong!');</script>";
+        return false; // Keluar dari fungsi jika nama barang kosong
+    }
+
+    // Validasi nama barang sudah ada atau belum (kecuali untuk barang yang sedang diedit)
+    $result = $koneksi->query("SELECT * FROM barang WHERE nama_barang='$nama' AND id_barang != '$id'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama Barang sudah ada!');</script>";
+        return false;
+    }
 
     // MENGECEK APAKAH DATA GAMBAR ADA DI DALAM FOLDER LOCAL
     if(!empty($tmp)){
@@ -193,6 +219,7 @@ function editBarang($data){
 
     return mysqli_affected_rows($koneksi);
 }
+
 // FUNCTION DELETE BARANG
 function deleteBarang($data){
     global $koneksi;
@@ -220,9 +247,17 @@ function tambahSatuan($data){
         return false; // Keluar dari fungsi jika nama satuan kosong
     }
 
+    // Validasi nama satuan sudah ada atau belum
+    $result = $koneksi->query("SELECT * FROM satuan WHERE nama_satuan='$satuan'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama Satuan sudah ada!');</script>";
+        return false;
+    }
+
     $koneksi->query("INSERT INTO satuan(id_satuan, nama_satuan, update_at) VALUES('$id', '$satuan', NOW())");
     return mysqli_affected_rows($koneksi);
 }
+
 function deleteSatuan($data){
     global $koneksi;
     $id = $data['id'];
@@ -242,9 +277,17 @@ function editSatuan($data){
         return false; // Keluar dari fungsi jika nama satuan kosong
     }
 
+    // Validasi nama satuan sudah ada atau belum (kecuali untuk satuan yang sedang diedit)
+    $result = $koneksi->query("SELECT * FROM satuan WHERE nama_satuan='$name' AND id_satuan != '$id'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama Satuan sudah ada!');</script>";
+        return false;
+    }
+
     $koneksi->query("UPDATE satuan SET nama_satuan='$name', update_at=NOW() WHERE id_satuan='$id'");
     return mysqli_affected_rows($koneksi);
 }
+
 
 // FUNCTION TAMBAH, EDIT, DELETE DATA SUPPLIER
 function tambahSupplier($data){
@@ -261,7 +304,20 @@ function tambahSupplier($data){
         return false; // Keluar dari fungsi jika salah satu data kosong
     }
 
-    $koneksi->query("INSERT INTO supplier(id_sup, nama_sup, telepon_sup, alamat_sup, latest_update)VALUES('$id', '$name','$no', '$alamat', NOW())");
+    // Validasi nomor telepon hanya angka
+    if (!is_numeric($no)) {
+        echo "<script>alert('Nomor telepon harus diisi dengan angka!');</script>";
+        return false;
+    }
+
+    // Validasi nama supplier sudah ada atau belum
+    $result = $koneksi->query("SELECT * FROM supplier WHERE nama_sup='$name'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama supplier sudah ada!');</script>";
+        return false;
+    }
+
+    $koneksi->query("INSERT INTO supplier(id_sup, nama_sup, telepon_sup, alamat_sup, latest_update) VALUES('$id', '$name', '$no', '$alamat', NOW())");
     return mysqli_affected_rows($koneksi);
 }
 
@@ -277,6 +333,19 @@ function editSupplier($data){
     if (empty($name) || empty($no) || empty($alamat)) {
         echo "<script>alert('Semua data harus diisi!');</script>";
         return false; // Keluar dari fungsi jika salah satu data kosong
+    }
+
+    // Validasi nomor telepon hanya angka
+    if (!is_numeric($no)) {
+        echo "<script>alert('Nomor telepon harus diisi dengan angka!');</script>";
+        return false;
+    }
+
+    // Validasi nama supplier sudah ada atau belum (kecuali untuk supplier yang sedang diedit)
+    $result = $koneksi->query("SELECT * FROM supplier WHERE nama_sup='$name' AND id_sup != '$id'");
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Nama supplier sudah ada!');</script>";
+        return false;
     }
 
     $koneksi->query("UPDATE supplier SET nama_sup='$name', telepon_sup='$no', alamat_sup='$alamat', latest_update=NOW() WHERE id_sup = '$id'");
@@ -317,12 +386,21 @@ function deleteBarangMsk($data){
     $id_h = $data['id_h'];
     $stok = $data['jml'];
 
+    // Cek apakah stok mencukupi sebelum pengurangan
+    $stok_sekarang = $koneksi->query("SELECT stok FROM barang WHERE id_barang='$id_brg'")->fetch_assoc()['stok'];
+
+    if ($stok > $stok_sekarang) {
+        echo '<script>alert("Jumlah barang yang akan dihapus melebihi stok yang ada. Silakan cek kembali.");</script>';
+        return false;
+    }
+
     $koneksi->query("DELETE FROM barang_masuk WHERE id_bm='$id'");
     $koneksi->query("DELETE FROM history WHERE id='$id_h'");
     $koneksi->query("UPDATE barang SET stok=stok-$stok WHERE id_barang='$id_brg'");
 
-    return mysqli_affected_rows($koneksi);
+    return true;
 }
+
 
 // FUNCTION TAMBAH, DELETE BARANG KELUAR
 function tambahBarangKeluar($data){
@@ -412,7 +490,6 @@ function addUser($nama, $username, $password, $rpassword, $role, $email) {
     }
 }
 
-
 function editUser($id, $nama, $username, $password, $rpassword) {
     global $koneksi;
 
@@ -445,38 +522,46 @@ function editUser($id, $nama, $username, $password, $rpassword) {
     $queryUpdate->execute();
 
     if ($queryUpdate->affected_rows > 0) {
-        return 1; // User berhasil diubah
+        // User berhasil diubah
+        return 1;
     } else {
-        return -3; // Error saat mengubah user
+        // Error saat mengubah user
+        if ($queryUpdate->errno == 1062) {
+            return -3; // MySQL error code for duplicate entry
+        } else {
+            return $queryUpdate->errno; // Return the specific MySQL error code for other errors
+        }
     }
 }
-
 
 
 function editUserWithoutPassword($id, $nama, $username) {
     global $koneksi;
 
     // Mengecek apakah username sudah ada di dalam database (kecuali pengguna saat ini)
-    $query = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
-    $query->bind_param("si", $username, $id);
-    $query->execute();
-    $query->store_result();
+    $queryUsername = $koneksi->prepare("SELECT * FROM users WHERE username = ? AND id != ?");
+    $queryUsername->bind_param("si", $username, $id);
+    $queryUsername->execute();
+    $queryUsername->store_result();
 
-    if ($query->num_rows > 0) {
+    if ($queryUsername->num_rows > 0) {
         return -1; // Username sudah digunakan
     }
 
-    // Jika kondisi di atas terpenuhi, data akan diupdate di dalam database tanpa mengubah password
-    $query = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
-    $query->bind_param("ssi", $nama, $username, $id);
-    $query->execute();
+    // Update hanya untuk nama
+    $queryUpdate = $koneksi->prepare("UPDATE users SET nama = ?, username = ? WHERE id = ?");
+    $queryUpdate->bind_param("ssi", $nama, $username, $id);
+    $queryUpdate->execute();
 
-    if ($query->affected_rows > 0) {
-        return 1; // User berhasil diubah
+    if ($queryUpdate->affected_rows > 0) {
+        // User berhasil diubah
+        return 1;
     } else {
-        return -3; // Error saat mengubah user
+        return -2; // Error saat mengubah user
     }
 }
+
+
 ///------------------------------------------------------------------------------------
 
 

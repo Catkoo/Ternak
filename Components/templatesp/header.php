@@ -26,7 +26,7 @@
                                 Welcome <?= $_SESSION['login']['username'];?> <i class="fa-solid fa-user-large"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-profile" aria-labelledby="navbarDarkDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="#changePass" data-bs-toggle="modal">Change Password</a></li>
+                                    <!-- <li><a class="dropdown-item" href="#changePass" data-bs-toggle="modal">Change Password</a></li> -->
                                 <li><a class="dropdown-item" href="logout.php" id="logout">Logout</a></li>
                             </ul>
                         </li>
