@@ -72,9 +72,11 @@ function loginFunc($data) {
         ];
 
         if ($role == 'admin') {
-            header('location: index.php'); // Ganti dengan halaman admin
+            echo "<script>alert('Login Berhasil');window.location.href = 'index.php';</script>";
+            // header('location: index.php'); // Ganti dengan halaman admin
         } elseif ($role == 'pimpinan') {
-            header('location: index_pemimpin.php'); // Ganti dengan halaman pimpinan
+            echo "<script>alert('Login Berhasil');window.location.href = 'index_pemimpin.php';</script>";
+            // header('location: index_pemimpin.php'); // Ganti dengan halaman pimpinan
         } else {
             header('location: login.php'); // Ganti dengan halaman default jika role bukan admin atau pimpinan
         }
@@ -221,18 +223,33 @@ function editBarang($data){
 }
 
 // FUNCTION DELETE BARANG
-function deleteBarang($data){
+function deleteBarang($data) {
     global $koneksi;
     $id = $data['id'];
     $foto = $data['foto'];
+    
+    // Hapus file foto dari direktori
     unlink('assets/img/'.$foto);
 
+    // Hapus data dari tabel-tabel terkait
     $koneksi->query("DELETE FROM barang WHERE id_barang='$id'");
     $koneksi->query("DELETE FROM barang_keluar WHERE barang_id='$id'");
     $koneksi->query("DELETE FROM barang_masuk WHERE barang_id='$id'");
     $koneksi->query("DELETE FROM history WHERE barang_id='$id'");
-    return mysqli_affected_rows($koneksi);
+    
+    // Periksa apakah ada baris yang terpengaruh (data dihapus)
+    $rowsAffected = mysqli_affected_rows($koneksi);
+
+    // Tambahkan alert berdasarkan apakah data berhasil dihapus atau tidak
+    if ($rowsAffected > 0) {
+        echo "<script>alert('Data barang berhasil dihapus');</script>";
+    } else {
+        echo "<script>alert('Data barang berhasil dihapus');</script>";
+    }
+
+    return $rowsAffected;
 }
+
 
 // FUNCTION TAMBAH, DELETE, EDIT DATA SATUAN
 function tambahSatuan($data){
@@ -503,9 +520,9 @@ function editUser($id, $nama, $username, $password, $rpassword) {
         return -1; // Username sudah digunakan
     }
 
-    // Jika password tidak kosong, maka lakukan pemeriksaan dan update password
-    if (!empty($password)) {
-        // Mengecek apakah password dan konfirmasi ulang password cocok
+    // Mengecek apakah password tidak kosong dan apakah username berubah
+    if (!empty($password) || $usernameHasChanged) {
+        // Jika password tidak kosong, maka lakukan pemeriksaan dan update password
         if ($password !== $rpassword) {
             return -2; // Password tidak sesuai
         }
@@ -535,6 +552,7 @@ function editUser($id, $nama, $username, $password, $rpassword) {
 }
 
 
+
 function editUserWithoutPassword($id, $nama, $username) {
     global $koneksi;
 
@@ -560,6 +578,8 @@ function editUserWithoutPassword($id, $nama, $username) {
         return -2; // Error saat mengubah user
     }
 }
+
+
 
 
 ///------------------------------------------------------------------------------------

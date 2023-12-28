@@ -88,9 +88,8 @@ if (isset($_POST['editUser'])) {
         // Pengguna tidak ingin mengubah kata sandi
         // Disini kita melakukan pengecekan terhadap keseluruhan data yang diisi
         if (!empty($nama) && !empty($username)) {
-            // Hapus bagian yang berkaitan dengan edit role di sini
-
-            $result = editUserWithoutPassword($id, $nama, $username);
+            // Tambahkan validasi untuk mengubah username
+            echo "<script>alert('Untuk mengubah username, Anda harus memasukkan kata sandi baru.');</script>";
         } else {
             echo "<script>alert('Semua data harus diisi!');</script>";
         }
@@ -100,18 +99,20 @@ if (isset($_POST['editUser'])) {
     if (isset($result) && $result === 1) {
         echo "<script>alert('Informasi pengguna berhasil diubah');</script>";
     } else if (isset($result) && $result === -1) {
-        echo "<script>alert('Username sudah digunakan!');</script>";
+        echo "<script>alert('Username atau email sudah digunakan!');</script>";
     } else if (isset($result) && $result === -2) {
-        echo "<script>alert('Tidak Ada Data Yang Diubah!');</script>";
+        // Hapus alert yang tidak terpakai
     } else if (isset($result) && $result === -3) {
         echo "<script>alert('Informasi pengguna berhasil diubah, tetapi peran (role) tidak berhasil diubah.');</script>";
-        // You can customize the message above based on your specific requirements
+        // Anda dapat menyesuaikan pesan di atas berdasarkan kebutuhan spesifik
     } else if (isset($result) && $result === 2) {
-        echo "<script>alert('Tidak Ada Data Yang Diubah');</script>";
+        // Hapus alert yang tidak terpakai
     } else {
         echo "<script>alert('Gagal mengubah informasi pengguna');</script>";
     }
 }
+
+
 
 // Fungsi untuk menghapus pengguna
 if (isset($_POST['deleteUser'])) {
